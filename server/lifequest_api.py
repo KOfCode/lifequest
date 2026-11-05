@@ -26,12 +26,13 @@ class H(BaseHTTPRequestHandler):
         good = bool(t) and hmac.compare_digest(t, TOKEN)
         if good: return True
         with LK:
+            pre = GLOCK[0] > now
             f = [x for x in FAILS.get(ip, []) if x > now - IP_WIN] + [now]; FAILS[ip] = f
             GFAILS[:] = [x for x in GFAILS if x > now - G_WIN] + [now]
             if len(f) >= IP_MAX: LOCKED[ip] = now + LOCK; FAILS.pop(ip, None)
             if len(GFAILS) >= G_MAX: GLOCK[0] = now + LOCK
             if len(FAILS) > 10000: FAILS.clear()
-            blocked = GLOCK[0] > now or LOCKED.get(ip, 0) > now
+            blocked = pre
         self._send(429 if blocked else 401, {'error': 'too many attempts' if blocked else 'unauthorized'}); return False
     def do_GET(self):
         if self.path.rstrip('/') in ('', '/health'): return self._send(200, {'ok': True})
