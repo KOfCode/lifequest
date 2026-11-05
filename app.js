@@ -68,7 +68,36 @@ function load(){let s;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
   s.days['2026-11-05']={done:{breakfast:15},notes:{breakfast:'茶叶蛋2个、小米粥半碗、肉包1个'},water:0};}
  // merge new default habits
  DEF_H.forEach(h=>{if(!s.habits.find(x=>x.id===h.id))s.habits.push({...h})});return s}
-function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function save(noSync){if(!noSync){S.updatedAt=Date.now();const d=S.days[today()];if(d)d.t=S.updatedAt}localStorage.setItem(KEY,JSON.stringify(S));if(!noSync)schedulePush()}
+/* ---------- sync ---------- */
+const API='api/state',TK='lq_token';let syncSt={state:'idle',at:+localStorage.getItem('lq_synced')||0,msg:''},pushT=null,dirty=false;
+(function(){const m=location.hash.match(/k=([A-Za-z0-9_\-]+)/);if(m){localStorage.setItem(TK,m[1]);history.replaceState(null,'',location.pathname+location.search)}})();
+const tok=()=>localStorage.getItem(TK)||'';
+function mergeState(L,Rm){if(!Rm)return L;if(!L)return Rm;const newer=(Rm.updatedAt||0)>(L.updatedAt||0)?Rm:L,o=JSON.parse(JSON.stringify(newer));o.days={};
+ const ks=new Set([...Object.keys(L.days||{}),...Object.keys(Rm.days||{})]);
+ ks.forEach(k=>{const a=(L.days||{})[k],b=(Rm.days||{})[k];if(!a||!b){o.days[k]=a||b;return}
+  if((a.t||0)!==(b.t||0))o.days[k]=(a.t||0)>(b.t||0)?a:b;else o.days[k]={...a,done:{...b.done,...a.done},notes:{...(b.notes||{}),...(a.notes||{})},water:Math.max(a.water||0,b.water||0)}});
+ o.owned={...(Rm.owned||{}),...(L.owned||{})};o.badges={...(Rm.badges||{}),...(L.badges||{})};o.spent=Math.max(L.spent||0,Rm.spent||0);o.raids=Math.max(L.raids||0,Rm.raids||0);
+ o.updatedAt=Math.max(L.updatedAt||0,Rm.updatedAt||0);return o}
+function setSync(st,msg){syncSt.state=st;syncSt.msg=msg||'';if(st==='ok'){syncSt.at=Date.now();localStorage.setItem('lq_synced',syncSt.at)}const e=document.getElementById('syncst');if(e)renderSync()}
+function renderSync(){const e=document.getElementById('syncst');if(!e)return;const lab={idle:'未同步',ok:'✓ 已同步',busy:'同步中…',err:'⚠ 同步失败，稍后自动重试',off:'未设置同步口令',na:'当前站点不支持同步'}[syncSt.state];
+ e.innerHTML=`<b style="color:${syncSt.state==='ok'?'var(--grn)':syncSt.state==='err'?'var(--red)':'var(--gold)'}">${lab}</b>${syncSt.at?`<br><span class="mut">上次同步：${new Date(syncSt.at).toLocaleString('zh-CN',{hour12:false})}</span>`:''}${syncSt.msg?`<br><span class="mut">${esc(syncSt.msg)}</span>`:''}`}
+async function api(method,body){const r=await fetch(API,{method,headers:{'X-Sync-Token':tok(),'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
+ if(r.status===404)throw Object.assign(new Error('na'),{na:1});if(r.status===401)throw Object.assign(new Error('口令不对'),{auth:1});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+function schedulePush(){dirty=true;localStorage.setItem('lq_dirty','1');clearTimeout(pushT);pushT=setTimeout(push,1500)}
+async function push(){if(!tok()){setSync('off');return}setSync('busy');try{await api('PUT',{updatedAt:S.updatedAt||Date.now(),state:S});dirty=false;localStorage.removeItem('lq_dirty');setSync('ok')}
+ catch(e){if(e.na)return setSync('na');setSync('err',e.message);clearTimeout(pushT);pushT=setTimeout(push,30000)}}
+async function pull(){if(!tok()){setSync('off');return}setSync('busy');try{const r=await api('GET');if(r.state){S=mergeState(S,r.state);DEF_H.forEach(h=>{if(!S.habits.find(x=>x.id===h.id))S.habits.push({...h})});save(true);render()}await push()}
+ catch(e){if(e.na)return setSync('na');setSync('err',e.message);setTimeout(pull,30000)}}
+addEventListener('online',()=>{localStorage.getItem('lq_dirty')?push():pull()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+function setToken(v){v=(v||'').trim().replace(/^.*#k=/,'');if(!v)return;localStorage.setItem(TK,v);toast('已保存同步口令');pull()}
+function report(){const d=day(),T=totals(),hs=S.habits.filter(h=>h.on);const lines=[`【${today()} 汇报给 Veronica】Lv.${T.lv}（${T.cur}/${T.nx} XP），今日 ${Math.min(CAP,rawXP(d))} XP，连击 ${streak()} 天`];
+ ['breakfast','lunch','dinner'].forEach(m=>lines.push(`${hab(m).name}：${d.done[m]!==undefined?'✓ '+((d.notes||{})[m]||''):'未记录'}`));
+ lines.push(`饮水：${d.water||0}ml`);const w=weekDone();lines.push(`本周训练：${Object.keys(w).sort().join('/')||'无'}（${Object.keys(w).length}/3）${Object.keys(d.done).filter(k=>k.startsWith('train_')).length?'，今天已练':''}`);
+ lines.push(`睡觉：${d.done.bed!==undefined?(d.done.bed?'23:00 前上床 ✓':'晚于 23:00'):'未记录'}`);
+ DOMS.filter(x=>x.id!=='fit').forEach(x=>{const ok=hs.filter(h=>h.dom===x.id&&(h.freq==='day'?d.done[h.id]!==undefined:d.done[h.id]!==undefined)).map(h=>h.name);if(ok.length)lines.push(`${x.name}：${ok.join('、')}`)});
+ const t=lines.join('\n');(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('已复制，去发给 Veronica 吧'),()=>prompt('复制下面的内容：',t))}
 function day(k=today()){return S.days[k]||(S.days[k]={done:{},notes:{},water:0})}
 const hab=id=>S.habits.find(h=>h.id===id);
 function rawXP(d){return Object.values(d.done||{}).reduce((a,b)=>a+b,0)}
@@ -302,7 +331,7 @@ const BADGES=[['egg','第一口记录','记录第一餐',()=>['breakfast','lunch
 function renderAch(T){let n=0;badges.innerHTML=BADGES.map(([ic,nm,ds,fn],i)=>{const on=fn(T);if(on){n++;if(!S.badges[i]){S.badges[i]=today();save();setTimeout(()=>toast('🏆 解锁成就：'+nm),700)}}return `<div class="bd ${on?'on':''}"><div class="ic">${pi(ic)}</div><b>${nm}</b><small>${ds}</small></div>`}).join('');achc.textContent=n+'/'+BADGES.length}
 
 /* ---------- settings ---------- */
-function renderSet(){habset.innerHTML=DOMS.map(x=>`<div style="margin:10px 0 4px;display:flex;align-items:center"><b>${x.ic} ${x.name}</b><label class="mut" style="margin-left:auto"><input type="checkbox" class="sw" ${S.hidden[x.id]?'':'checked'} onchange="S.hidden['${x.id}']=!this.checked;save();render()"> 显示</label></div>`+
+function renderSet(){renderSync();habset.innerHTML=DOMS.map(x=>`<div style="margin:10px 0 4px;display:flex;align-items:center"><b>${x.ic} ${x.name}</b><label class="mut" style="margin-left:auto"><input type="checkbox" class="sw" ${S.hidden[x.id]?'':'checked'} onchange="S.hidden['${x.id}']=!this.checked;save();render()"> 显示</label></div>`+
  S.habits.filter(h=>h.dom===x.id).map(h=>`<div class="row" style="font-size:13px"><input type="checkbox" class="sw" ${h.on?'checked':''} ${h.auto?'disabled':''} onchange="hab('${h.id}').on=this.checked;save();render()"><span style="flex:1">${h.name}</span>
  <select style="width:auto;padding:4px" onchange="setFreq('${h.id}',this.value)" ${h.auto?'disabled':''}>${Object.entries({day:'每天',week:'每周',month:'每月',quarter:'每季'}).map(([k,v])=>`<option value="${k}" ${h.freq===k?'selected':''}>${v}</option>`).join('')}</select>
  ${h.freq==='day'?'':`<input type="number" min="1" max="9" value="${h.target}" style="width:46px;padding:4px" onchange="hab('${h.id}').target=+this.value||1;save();render()">次`}
@@ -316,7 +345,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.p)
 // dev hook for previews: ?lv=N
 const q=new URLSearchParams(location.search);if(q.get('stage')){window._forceStage=+q.get('stage')}
 document.querySelectorAll('[data-ic]').forEach(e=>e.outerHTML=pi(e.dataset.ic,e.className.replace('pi','')));
-save();render();
+save(true);render();renderSync();pull();
 if(window._forceStage!==undefined){document.getElementById('stage').innerHTML=charSVG(window._forceStage);lv.textContent='Lv.'+STAGES[window._forceStage][0];stname.textContent=STAGES[window._forceStage][2]+' · '+STAGES[window._forceStage][1]}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(q.get('raid')){go('raid');startRaid(q.get('raid'))}if(q.get('page'))go(q.get('page'));if(q.get('slot')){wslot=q.get('slot');render()}if(q.get('fit')){S.outfit=JSON.parse(q.get('fit'));render()}if(q.get('coins')){S.spent=-(+q.get('coins'));render()}if(q.get('pv'))document.getElementById('stage').click();if(q.get('lvup'))lvUp(5,2,true);if(q.get('icon')){document.body.innerHTML='<div id=ic style="width:100vw;height:100vh;background:#07071a"></div>';ic.innerHTML=charSVG(5,false,{...STAGE_FIT[5]}).replace('viewBox="0 0 32 48"','viewBox="7 1.5 18 18" preserveAspectRatio="xMidYMid slice" width="100%" height="100%"')}
