@@ -75,7 +75,7 @@ const API='api/state',TK='lq_token';let syncSt={state:'idle',at:+localStorage.ge
 const tok=()=>localStorage.getItem(TK)||'';
 function mergeState(L,Rm){if(!Rm)return L;if(!L)return Rm;const newer=(Rm.updatedAt||0)>(L.updatedAt||0)?Rm:L,o=JSON.parse(JSON.stringify(newer));o.days={};
  const ks=new Set([...Object.keys(L.days||{}),...Object.keys(Rm.days||{})]);
- ks.forEach(k=>{const a=(L.days||{})[k],b=(Rm.days||{})[k];if(!a||!b){o.days[k]=a||b;return}
+ ks.forEach(k=>{const a=(L.days||{})[k],b=(Rm.days||{})[k];const E=d=>!d||(!Object.keys(d.done||{}).length&&!(d.water>0)&&!Object.keys(d.notes||{}).length&&!Object.keys(d.meals||{}).length);if(E(a)||E(b)){o.days[k]=E(a)?(b||a):a;return}
   if((a.t||0)!==(b.t||0))o.days[k]=(a.t||0)>(b.t||0)?a:b;else o.days[k]={...a,done:{...b.done,...a.done},notes:{...(b.notes||{}),...(a.notes||{})},water:Math.max(a.water||0,b.water||0)}});
  o.owned={...(Rm.owned||{}),...(L.owned||{})};o.badges={...(Rm.badges||{}),...(L.badges||{})};o.spent=Math.max(L.spent||0,Rm.spent||0);o.raids=Math.max(L.raids||0,Rm.raids||0);
  const pm={};[...(Rm.proofs||[]),...(L.proofs||[])].forEach(p=>{const q=pm[p.id];if(!q||(p.st==='up'&&q.st!=='up'))pm[p.id]=p});o.proofs=Object.values(pm);o.updatedAt=Math.max(L.updatedAt||0,Rm.updatedAt||0);return o}
