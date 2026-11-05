@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="薄肌养成">
+<meta name="theme-color" content="#0b0d14"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png">
+<title>薄肌养成</title>
+<style>
+:root{--bg:#0b0d14;--card:#151926;--card2:#1c2133;--line:#262c42;--tx:#e9ecf5;--mut:#8a93ad;--red:#ff3b47;--gold:#ffc24a;--cy:#3fd7ff;--grn:#3ee08f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(120% 60% at 50% -10%,#24142a 0,#0b0d14 60%);background-attachment:fixed;color:var(--tx);font:15px/1.45 -apple-system,"PingFang SC",system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom));min-height:100vh}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.wrap{max-width:520px;margin:0 auto;padding:12px 14px}
+.card{background:linear-gradient(180deg,var(--card),#121522);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}h2 small{margin-left:auto;color:var(--mut);font-weight:400;font-size:12px}
+.hero{display:flex;gap:12px;align-items:center}
+.stage{width:150px;height:210px;flex:none;position:relative;border-radius:16px;background:radial-gradient(circle at 50% 70%,#2a1e3a,#10121c 70%);border:1px solid var(--line);overflow:hidden}
+.stage svg,.bd svg{width:100%;height:100%}
+.bob{animation:bob 2.6s ease-in-out infinite;transform-origin:50% 100%}@keyframes bob{50%{transform:translateY(-3px) scaleY(1.012)}}
+.cele{animation:cele .9s ease 2}@keyframes cele{30%{transform:translateY(-14px) scale(1.05)}60%{transform:translateY(0)}}
+.lv{font-size:30px;font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,#fff,var(--gold));-webkit-background-clip:text;color:transparent}
+.ttl{color:var(--gold);font-weight:700}.mut{color:var(--mut);font-size:12px}
+.bar{height:10px;background:#0d0f18;border-radius:9px;overflow:hidden;border:1px solid var(--line);margin:6px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:9px;transition:width .6s}
+.chip.son{background:var(--red);border-color:var(--red)}button.chip{cursor:pointer}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:3px 9px;font-size:12px}
+.attrs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.attr{text-align:center;background:var(--card2);border-radius:12px;padding:6px 2px;font-size:11px}.attr b{display:block;font-size:16px}
+.dom{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;background:#11141f}
+.dh{display:flex;align-items:center;gap:10px;padding:10px 12px;width:100%;background:transparent;text-align:left}
+.ring{width:38px;height:38px;flex:none}.dh b{font-size:15px}.dh .mut{display:block}
+.arrow{margin-left:auto;color:var(--mut);transition:.2s}.dom.open .arrow{transform:rotate(90deg)}
+.items{display:none;padding:0 10px 10px}.dom.open .items{display:block}
+.q{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--card2);margin-top:6px;width:100%;text-align:left}
+.q .ck{width:24px;height:24px;border-radius:8px;border:2px solid #3a425e;flex:none;display:grid;place-items:center;font-size:14px}
+.q.done .ck{background:var(--grn);border-color:var(--grn);color:#062}.q.done .qt{color:var(--mut)}.q.done .qt>b{text-decoration:line-through}
+.q .qt{flex:1}.q .qt small{display:block;color:var(--mut);font-size:11px;text-decoration:none}.xp{color:var(--gold);font-size:12px;font-weight:700;white-space:nowrap}
+.water{display:flex;align-items:center;gap:10px}.glass{flex:1}.btn{background:linear-gradient(180deg,#ff4d58,#d81f2c);padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:0 4px 14px #ff3b4740}
+.btn.gh{background:var(--card2);box-shadow:none;border:1px solid var(--line)}.btn.gold{background:linear-gradient(180deg,#ffd36e,#f0a020);color:#2a1800}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0d0f18ee;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:none;padding:9px 0 7px;font-size:11px;color:var(--mut)}nav button span{display:block;font-size:20px}nav button.on{color:var(--red)}
+.page{display:none}.page.on{display:block}
+.raidsel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rs{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center}.rs b{font-size:22px;display:block}.rs.cl{border-color:var(--grn)}
+.boss{font-size:13px}.hp{height:14px;background:#2a0d12;border-radius:8px;overflow:hidden;border:1px solid #5a1a22}.hp i{display:block;height:100%;background:linear-gradient(90deg,#ff2a3a,#ff7a3a);transition:width .5s}
+.big{font-size:54px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.ex{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}.ex.cur{color:var(--gold)}.ex.ok{color:var(--mut);text-decoration:line-through}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.bd{background:var(--card2);border-radius:14px;padding:10px 6px;text-align:center;font-size:12px;border:1px solid var(--line)}
+.bd .ic{font-size:30px;filter:grayscale(1) opacity(.35)}.bd.on{border-color:var(--gold);box-shadow:0 0 14px #ffc24a30}.bd.on .ic{filter:none}.bd small{display:block;color:var(--mut);font-size:10px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;font-size:11px}.cal div{aspect-ratio:1;border-radius:8px;display:grid;place-items:center;background:#141826}
+.chart{display:flex;align-items:flex-end;gap:8px;height:120px}.chart div{flex:1;text-align:center;font-size:10px;color:var(--mut)}.chart i{display:block;background:linear-gradient(0deg,var(--red),var(--gold));border-radius:6px 6px 2px 2px;margin-bottom:4px}
+.forms{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}.fm{flex:none;width:74px;text-align:center;font-size:10px;background:var(--card2);border-radius:12px;padding:4px;border:1px solid var(--line)}.fm.sel{border-color:var(--red)}
+.fm svg{width:64px;height:90px}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}.modal.on{display:flex}
+.mbox{background:linear-gradient(180deg,#24172e,#121522);border:1px solid var(--gold);border-radius:22px;padding:20px;text-align:center;max-width:340px;width:100%;animation:pop .4s}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+input,textarea,select{width:100%;background:#0d0f18;border:1px solid var(--line);border-radius:10px;color:var(--tx);padding:9px;font:inherit}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0}.sw{width:auto}
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:#1d2234;border:1px solid var(--gold);padding:8px 16px;border-radius:99px;z-index:10;opacity:0;transition:.3s;pointer-events:none;font-weight:700;color:var(--gold)}
+.toast.on{opacity:1}
+.rule p{margin:6px 0;font-size:13px;color:#c8cde0}
+</style></head><body>
+<div class="toast" id="toast"></div>
+<div class="wrap">
+<section class="page on" id="p-home">
+ <div class="card hero">
+  <div class="stage" id="stage"></div>
+  <div style="flex:1;min-width:0">
+   <div class="mut">老大 · 薄肌养成计划</div>
+   <div class="lv" id="lv">Lv.1</div><div class="ttl" id="stname"></div>
+   <div class="bar"><i id="xpbar"></i></div><div class="mut" id="xptx"></div>
+   <div class="chips"><span class="chip" id="streak"></span><span class="chip" id="todayxp"></span><span class="chip" id="coinc"></span></div>
+  </div>
+ </div>
+ <div class="card"><h2>⚔️ 角色属性<small>点人物可预览形态</small></h2><div class="attrs" id="attrs"></div></div>
+ <div class="card"><h2>💧 今日饮水<small id="wtx"></small></h2>
+  <div class="water"><div class="glass"><div class="bar" style="height:16px"><i id="wbar" style="background:linear-gradient(90deg,#2a8cff,var(--cy))"></i></div></div>
+  <button class="btn" onclick="water(250)">+250ml</button><button class="btn gh" onclick="water(-250)">−</button></div></div>
+ <div class="card"><h2>📋 今日任务<small id="qcount"></small></h2><div id="doms"></div></div>
+</section>
+
+<section class="page" id="p-raid"><div class="card"><h2>🛡️ 训练副本<small id="wk"></small></h2><div class="raidsel" id="raidsel"></div></div><div id="raid"></div></section>
+
+<section class="page" id="p-ward"><div class="card"><h2>👕 衣橱<small id="wcoin" style="color:var(--gold);font-weight:700;font-size:14px"></small></h2>
+ <div class="stage" id="wchar" style="width:180px;height:252px;margin:0 auto 10px"></div>
+ <div class="chips" id="wslots" style="justify-content:center"></div>
+ <p class="mut" style="text-align:center;margin:8px 0 0">完成任务每 5 XP 得 1 金币 · 部分装备靠等级/成就/连击解锁</p></div>
+ <div class="card"><div class="badges" id="witems"></div><button class="btn gh" style="width:100%;margin-top:10px" onclick="resetFit()">恢复当前形态默认造型</button></div></section>
+<section class="page" id="p-hist">
+ <div class="card"><h2>📈 本周经验</h2><div class="chart" id="chart"></div></div>
+ <div class="card"><h2>🗓️ 打卡日历<small id="calm"></small></h2><div class="cal" id="cal"></div><div id="dayd" class="mut" style="margin-top:10px"></div></div>
+</section>
+
+<section class="page" id="p-ach"><div class="card"><h2>🏆 成就墙<small id="achc"></small></h2><div class="badges" id="badges"></div></div></section>
+
+<section class="page" id="p-set">
+ <div class="card rule"><h2>📜 规则</h2>
+  <p>• 每完成一项任务得经验（XP）：三餐各 +15，饮水满 2000ml +20，23:00 前上床 +20，完成训练副本 +50，其它习惯 10–50 不等。</p>
+  <p>• 每天计入等级的经验上限 <b>160 XP</b>（超出部分只计入属性），保证升级稳定不注水。</p>
+  <p>• 升级所需经验逐级增加：第 n 级升到 n+1 需要 <b>300 + 100×(n−1)</b> XP。认真坚持 2–3 周约到 Lv5。</p>
+  <p>• 人物形态：Lv1 普通身材 → Lv3 运动觉醒 → Lv5 薄肌学徒 → Lv8 腹肌显影 → Lv12 薄肌战士 → Lv16 银红战甲。</p>
+  <p>• 五大属性：体魄（健身）、智识（学习）、乐感（音乐）、财商（投资）、创造（副业），各自独立升级。</p>
+  <p>• 连续打卡：当天完成至少 3 项任务算一天，断一天归零。</p>
+  <p>• 周/月/季任务按周期计数，到期自动重置（周 = 周一至周日）。</p></div>
+ <div class="card"><h2>⚙️ 领域与习惯</h2><div id="habset"></div></div>
+ <div class="card"><h2>💾 数据</h2><p class="mut">数据只存在这台手机的 Safari 里，清除 Safari 数据会丢失，记得定期导出备份。</p>
+  <div class="row"><button class="btn gh" onclick="exp()">导出备份</button><button class="btn gh" onclick="document.getElementById('imf').click()">导入备份</button><button class="btn gh" style="color:var(--red)" onclick="reset()">重置</button></div>
+  <input type="file" id="imf" accept=".json,application/json" style="display:none" onchange="imp(this)"></div>
+</section>
+</div>
+<nav id="nav"><button class="on" data-p="home"><span>🏠</span>主页</button><button data-p="raid"><span>⚔️</span>副本</button><button data-p="ward"><span>👕</span>衣橱</button><button data-p="hist"><span>📈</span>记录</button><button data-p="ach"><span>🏆</span>成就</button><button data-p="set"><span>⚙️</span>设置</button></nav>
+<div class="modal" id="modal" onclick="if(event.target===this)this.classList.remove('on')"><div class="mbox" id="mbox"></div></div>
+<script src="app.js"></script></body></html>
