@@ -32,7 +32,7 @@ for dom,ids in by.items():
         print(f"      · [{p['type']}] {t(p['createdAt'])} {body}{c}")
 orph=[p for p in ps if p['habit'] not in d['done'] and not (p['habit']=='train' and any(k.startswith('train_') for k in d['done']))]
 for p in orph: print(f"  (未打卡但有证明) {nm(p['habit'])} [{p['type']}] {p.get('text') or p.get('file')}")
-print(f"\n计数：完成 {len([i for i in d['done'] if not i.startswith('proof_')])} 项；证明 " + '、'.join(f"{k}{sum(1 for p in ps if p['type']==k)}" for k in ('text','image','audio','video','file') if any(p['type']==k for p in ps)))
+print(f"\n计数：完成 {len([i for i in d['done'] if not i.startswith('proof_')])} 项；证明 " + '、'.join(f"{k}{sum(1 for p in ps if p['type']==k)}" for k in ('text','image','audio','video','file') if any(p['type']==k for p in ps)) or '0')
 if D in sm: print(f"\n[已有 Veronica 总结 {dt.datetime.fromtimestamp(sm[D]['createdAt']/1000):%m-%d %H:%M}]\n{sm[D]['text']}")
 print("\n--- JSON ---");print(json.dumps({'date':D,'day':d,'proofs':ps,'summary':sm.get(D)},ensure_ascii=False))
 PY
