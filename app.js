@@ -80,15 +80,15 @@ function mergeState(L,Rm){if(!Rm)return L;if(!L)return Rm;const newer=(Rm.update
  o.owned={...(Rm.owned||{}),...(L.owned||{})};o.badges={...(Rm.badges||{}),...(L.badges||{})};o.spent=Math.max(L.spent||0,Rm.spent||0);o.raids=Math.max(L.raids||0,Rm.raids||0);
  o.updatedAt=Math.max(L.updatedAt||0,Rm.updatedAt||0);return o}
 function setSync(st,msg){syncSt.state=st;syncSt.msg=msg||'';if(st==='ok'){syncSt.at=Date.now();localStorage.setItem('lq_synced',syncSt.at)}const e=document.getElementById('syncst');if(e)renderSync()}
-function renderSync(){const e=document.getElementById('syncst');if(!e)return;const lab={idle:'未同步',ok:'✓ 已同步',busy:'同步中…',err:'⚠ 同步失败，稍后自动重试',off:'未设置同步口令',na:'当前站点不支持同步'}[syncSt.state];
+function renderSync(){const e=document.getElementById('syncst');if(!e)return;const lab={idle:'未同步',ok:'✓ 已同步',busy:'同步中…',err:'⚠ 同步失败',off:'未设置同步口令',na:'当前站点不支持同步'}[syncSt.state];
  e.innerHTML=`<b style="color:${syncSt.state==='ok'?'var(--grn)':syncSt.state==='err'?'var(--red)':'var(--gold)'}">${lab}</b>${syncSt.at?`<br><span class="mut">上次同步：${new Date(syncSt.at).toLocaleString('zh-CN',{hour12:false})}</span>`:''}${syncSt.msg?`<br><span class="mut">${esc(syncSt.msg)}</span>`:''}`}
 async function api(method,body){const r=await fetch(API,{method,headers:{'X-Sync-Token':tok(),'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
- if(r.status===404)throw Object.assign(new Error('na'),{na:1});if(r.status===401)throw Object.assign(new Error('口令不对'),{auth:1});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+ if(r.status===404)throw Object.assign(new Error('na'),{na:1});if(r.status===401)throw Object.assign(new Error('口令错误'),{auth:1});if(r.status===429)throw Object.assign(new Error('尝试太多，请 15 分钟后再试'),{auth:1});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 function schedulePush(){dirty=true;localStorage.setItem('lq_dirty','1');clearTimeout(pushT);pushT=setTimeout(push,1500)}
 async function push(){if(!tok()){setSync('off');return}setSync('busy');try{await api('PUT',{updatedAt:S.updatedAt||Date.now(),state:S});dirty=false;localStorage.removeItem('lq_dirty');setSync('ok')}
- catch(e){if(e.na)return setSync('na');setSync('err',e.message);clearTimeout(pushT);pushT=setTimeout(push,30000)}}
+ catch(e){if(e.na)return setSync('na');setSync('err',e.message);if(e.auth)return;clearTimeout(pushT);pushT=setTimeout(push,30000)}}
 async function pull(){if(!tok()){setSync('off');return}setSync('busy');try{const r=await api('GET');if(r.state){S=mergeState(S,r.state);DEF_H.forEach(h=>{if(!S.habits.find(x=>x.id===h.id))S.habits.push({...h})});save(true);render()}await push()}
- catch(e){if(e.na)return setSync('na');setSync('err',e.message);setTimeout(pull,30000)}}
+ catch(e){if(e.na)return setSync('na');setSync('err',e.message);if(e.auth)return;setTimeout(pull,30000)}}
 addEventListener('online',()=>{localStorage.getItem('lq_dirty')?push():pull()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 function setToken(v){v=(v||'').trim().replace(/^.*#k=/,'');if(!v)return;localStorage.setItem(TK,v);toast('已保存同步口令');pull()}
