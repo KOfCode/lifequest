@@ -76,6 +76,17 @@ input,textarea,select{width:100%;background:#04041a;color:var(--tx);padding:7px;
 .rule p{margin:6px 0;font-size:13px;color:#c8cdf0}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:15;image-rendering:pixelated}
 .neon{color:var(--cy)}
+.pf{font-size:12px;color:var(--cy);padding:4px 6px;box-shadow:0 0 0 2px var(--line);background:#04041a;white-space:nowrap}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.pwrap{position:relative}
+.pfi{position:relative;background:#04041a;box-shadow:0 0 0 2px #000,0 0 0 4px var(--line);min-height:40px;font-size:12px;text-align:left}
+.pfi img{width:100%;aspect-ratio:1;object-fit:cover;display:block;image-rendering:auto;background:#10123a}
+.pfi.pw{grid-column:1/-1;padding:6px}.pfi.pt{padding:8px;white-space:pre-wrap;word-break:break-word}.pfi audio,.pfi video{width:100%;display:block}.pfi video{max-height:260px;background:#000}
+.pcap{padding:3px 5px;color:var(--mut);font-size:11px}.pst{position:absolute;top:2px;left:2px;background:#000c;color:var(--gold);font-size:10px;padding:0 3px}
+.play{position:absolute;top:35%;left:50%;transform:translateX(-50%);color:#fff;font-size:22px;text-shadow:0 0 6px #000}
+.px{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--red);color:#fff;font-size:11px;box-shadow:0 0 0 2px #000;z-index:2}
+.pbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px}.pbtns .btn{padding:8px 2px;font-size:13px}
+.mbox.wide{max-width:440px;max-height:88vh;overflow:auto;text-align:left}.mbox.wide .ttl,.mbox.wide>.mut{text-align:center}
+.vsum{box-shadow:0 -3px 0 0 var(--cy),0 3px 0 0 var(--cy),-3px 0 0 0 var(--cy),3px 0 0 0 var(--cy),0 0 16px #22f0ff40}.sumt{white-space:pre-wrap;font-size:14px;line-height:1.6}
 </style></head><body>
 <div class="toast" id="toast"></div><canvas id="fx"></canvas>
 <div class="wrap">
@@ -90,7 +101,7 @@ input,textarea,select{width:100%;background:#04041a;color:var(--tx);padding:7px;
   </div>
  </div>
  <div class="card"><h2><i class="pi s" data-ic="sword"></i>角色属性<small>点人物可预览形态</small></h2><div class="attrs" id="attrs"></div></div>
- <div class="card"><h2><i class="pi s" data-ic="drop"></i>今日饮水<small id="wtx"></small></h2>
+ <div class="card vsum" id="sumtoday" style="display:none"></div><div class="card"><h2><i class="pi s" data-ic="drop"></i>今日饮水<small id="wtx"></small></h2>
   <div class="water"><div class="glass"><div class="bar" style="height:16px"><i id="wbar" style="background:linear-gradient(90deg,#2a8cff,var(--cy))"></i></div></div>
   <button class="btn" onclick="water(250)">+250ml</button><button class="btn gh" onclick="water(-250)">−</button></div></div>
  <div class="card"><h2><i class="pi s" data-ic="scroll"></i>今日任务<small id="qcount"></small></h2><div id="doms"></div><button class="btn gold" style="width:calc(100% - 6px);margin-top:10px" onclick="report()">汇报给 Veronica</button></div>
@@ -108,7 +119,7 @@ input,textarea,select{width:100%;background:#04041a;color:var(--tx);padding:7px;
  <div class="card"><h2><i class="pi s" data-ic="cal"></i>打卡日历<small id="calm"></small></h2><div class="cal" id="cal"></div><div id="dayd" class="mut" style="margin-top:10px"></div></div>
 </section>
 
-<section class="page" id="p-ach"><div class="card"><h2><i class="pi s" data-ic="trophy"></i>成就墙<small id="achc"></small></h2><div class="badges" id="badges"></div></div></section>
+<section class="page" id="p-day"><div id="dayv"></div></section><section class="page" id="p-ach"><div class="card"><h2><i class="pi s" data-ic="trophy"></i>成就墙<small id="achc"></small></h2><div class="badges" id="badges"></div></div></section>
 
 <section class="page" id="p-set">
  <div class="card rule"><h2><i class="pi s" data-ic="scroll"></i>规则</h2>
@@ -130,4 +141,4 @@ input,textarea,select{width:100%;background:#04041a;color:var(--tx);padding:7px;
 </div>
 <nav id="nav"><button class="on" data-p="home"><i class="pi" data-ic="home"></i>主页</button><button data-p="raid"><i class="pi" data-ic="sword"></i>副本</button><button data-p="ward"><i class="pi" data-ic="shirt"></i>衣橱</button><button data-p="hist"><i class="pi" data-ic="chart"></i>记录</button><button data-p="ach"><i class="pi" data-ic="trophy"></i>成就</button><button data-p="set"><i class="pi" data-ic="gear"></i>设置</button></nav>
 <div class="modal" id="modal" onclick="if(event.target===this)this.classList.remove('on')"><div class="mbox" id="mbox"></div></div>
-<script src="app.js"></script></body></html>
+<script src="app.js"></script><script src="proof.js"></script></body></html>

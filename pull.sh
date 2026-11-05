@@ -22,7 +22,8 @@ print(f"\n【今天 {k}】{min(CAP,raw(d))} XP · 饮水 {d.get('water',0)}ml")
 for m in ('breakfast','lunch','dinner'):
   print(f"  {H[m]['name']}：{'✓ '+(d.get('notes') or {}).get(m,'') if m in d['done'] else '—'}")
 b=d['done'].get('bed');print(f"  睡觉：{'—' if b is None else ('23:00 前 ✓' if b else '晚于 23:00')}")
-other=[nm(i) for i in d['done'] if i not in('breakfast','lunch','dinner','bed','water')]
+other=[nm(i) for i in d['done'] if i not in('breakfast','lunch','dinner','bed','water') and not i.startswith('proof_')]
+print(f"  证明：{sum(1 for p in S.get('proofs',[]) if p.get('date')==k)} 条（详情：summary.sh get {k}）")
 print('  其它完成：'+('、'.join(other) or '—'))
 mon=td-dt.timedelta(days=td.weekday());wk=[(mon+dt.timedelta(days=i)).isoformat() for i in range(7)]
 print(f"\n【本周 {wk[0]} ~ {wk[-1]}】")

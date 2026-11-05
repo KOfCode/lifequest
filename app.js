@@ -78,16 +78,16 @@ function mergeState(L,Rm){if(!Rm)return L;if(!L)return Rm;const newer=(Rm.update
  ks.forEach(k=>{const a=(L.days||{})[k],b=(Rm.days||{})[k];if(!a||!b){o.days[k]=a||b;return}
   if((a.t||0)!==(b.t||0))o.days[k]=(a.t||0)>(b.t||0)?a:b;else o.days[k]={...a,done:{...b.done,...a.done},notes:{...(b.notes||{}),...(a.notes||{})},water:Math.max(a.water||0,b.water||0)}});
  o.owned={...(Rm.owned||{}),...(L.owned||{})};o.badges={...(Rm.badges||{}),...(L.badges||{})};o.spent=Math.max(L.spent||0,Rm.spent||0);o.raids=Math.max(L.raids||0,Rm.raids||0);
- o.updatedAt=Math.max(L.updatedAt||0,Rm.updatedAt||0);return o}
+ const pm={};[...(Rm.proofs||[]),...(L.proofs||[])].forEach(p=>{const q=pm[p.id];if(!q||(p.st==='up'&&q.st!=='up'))pm[p.id]=p});o.proofs=Object.values(pm);o.updatedAt=Math.max(L.updatedAt||0,Rm.updatedAt||0);return o}
 function setSync(st,msg){syncSt.state=st;syncSt.msg=msg||'';if(st==='ok'){syncSt.at=Date.now();localStorage.setItem('lq_synced',syncSt.at)}const e=document.getElementById('syncst');if(e)renderSync()}
 function renderSync(){const e=document.getElementById('syncst');if(!e)return;const lab={idle:'未同步',ok:'✓ 已同步',busy:'同步中…',err:'⚠ 同步失败',off:'未设置同步口令',na:'当前站点不支持同步'}[syncSt.state];
  e.innerHTML=`<b style="color:${syncSt.state==='ok'?'var(--grn)':syncSt.state==='err'?'var(--red)':'var(--gold)'}">${lab}</b>${syncSt.at?`<br><span class="mut">上次同步：${new Date(syncSt.at).toLocaleString('zh-CN',{hour12:false})}</span>`:''}${syncSt.msg?`<br><span class="mut">${esc(syncSt.msg)}</span>`:''}`}
 async function api(method,body){const r=await fetch(API,{method,headers:{'X-Sync-Token':tok(),'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store'});
  if(r.status===404)throw Object.assign(new Error('na'),{na:1});if(r.status===401)throw Object.assign(new Error('口令错误'),{auth:1});if(r.status===429)throw Object.assign(new Error('尝试太多，请 15 分钟后再试'),{auth:1});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 function schedulePush(){dirty=true;localStorage.setItem('lq_dirty','1');clearTimeout(pushT);pushT=setTimeout(push,1500)}
-async function push(){if(!tok()){setSync('off');return}setSync('busy');try{await api('PUT',{updatedAt:S.updatedAt||Date.now(),state:S});dirty=false;localStorage.removeItem('lq_dirty');setSync('ok')}
+async function push(){if(!tok()){setSync('off');return}setSync('busy');try{await api('PUT',{updatedAt:S.updatedAt||Date.now(),state:S});uploadQueue();dirty=false;localStorage.removeItem('lq_dirty');setSync('ok')}
  catch(e){if(e.na)return setSync('na');setSync('err',e.message);if(e.auth)return;clearTimeout(pushT);pushT=setTimeout(push,30000)}}
-async function pull(){if(!tok()){setSync('off');return}setSync('busy');try{const r=await api('GET');if(r.state){S=mergeState(S,r.state);DEF_H.forEach(h=>{if(!S.habits.find(x=>x.id===h.id))S.habits.push({...h})});save(true);render()}await push()}
+async function pull(){if(!tok()){setSync('off');return}setSync('busy');try{const r=await api('GET');pullSummaries();if(r.state){S=mergeState(S,r.state);DEF_H.forEach(h=>{if(!S.habits.find(x=>x.id===h.id))S.habits.push({...h})});save(true);render()}await push()}
  catch(e){if(e.na)return setSync('na');setSync('err',e.message);if(e.auth)return;setTimeout(pull,30000)}}
 addEventListener('online',()=>{localStorage.getItem('lq_dirty')?push():pull()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
@@ -113,7 +113,7 @@ function periodKeys(freq,ref=new Date()){const r=new Date(ref.getFullYear(),ref.
 function countIn(h){return periodKeys(h.freq).reduce((a,k)=>{const d=S.days[k];if(!d)return a;
  if(h.id==='train')return a+Object.keys(d.done).filter(x=>x.startsWith('train_')).length;return a+(d.done[h.id]?1:0)},0)}
 const FL={day:'今日',week:'本周',month:'本月',quarter:'本季'};
-function streak(){let n=0,d=new Date();const ok=k=>S.days[k]&&Object.keys(S.days[k].done).length>=3;
+function streak(){let n=0,d=new Date();const ok=k=>S.days[k]&&Object.keys(S.days[k].done).filter(x=>!x.startsWith('proof_')).length>=3;
  if(!ok(dk(d)))d.setDate(d.getDate()-1);while(ok(dk(d))){n++;d.setDate(d.getDate()-1)}return n}
 
 /* ---------- character (layered) ---------- */
@@ -255,11 +255,11 @@ function render(){const T=totals(),st=stageOf(T.lv),d=day();
    const ok=h.freq==='day'?doneToday:full;a+=ok?1:0;
    const prog=h.freq==='day'?'':`<small style="color:${full?'#3ee08f':'#ffc24a'}">${cnt}/${h.target} ${FL[h.freq]}</small>`;
    const note=d.notes&&d.notes[h.id]?`<small>📝 ${esc(d.notes[h.id])}</small>`:'';
-   return `<button class="q ${(h.freq==='day'?doneToday:doneToday||full)?'done':''}" onclick="tap('${h.id}')"><span class="ck">${doneToday||(h.freq!=='day'&&full)?'✓':''}</span><span class="qt"><b style="font-weight:600">${h.name}</b>${h.desc?`<small>${h.desc}</small>`:''}${note}</span>${prog?`<span style="text-align:right">${prog}</span>`:''}<span class="xp">+${h.xp}</span></button>`}).join('');
+   return `<button class="q ${(h.freq==='day'?doneToday:doneToday||full)?'done':''}" onclick="tap('${h.id}')"><span class="ck">${doneToday||(h.freq!=='day'&&full)?'✓':''}</span><span class="qt"><b style="font-weight:600">${h.name}</b>${h.desc?`<small>${h.desc}</small>`:''}${note}</span>${prog?`<span style="text-align:right">${prog}</span>`:''}<span class="pf" onclick="event.stopPropagation();proofModal('${h.id}')">${(()=>{const n=proofsFor(today(),h.id).length;return n?'📎'+n:'＋📎'})()}</span><span class="xp">+${h.xp}</span></button>`}).join('');
   tot+=hs.length;dn+=a;
   return `<div class="dom ${S.open[x.id]?'open':''}"><button class="dh" onclick="tog('${x.id}')">${ring(a/hs.length,x.col)}<span><b>${x.ic} ${x.name}</b><span class="mut">${x.attr} · ${a}/${hs.length} 已达成${x.by?' · '+x.by:''}</span></span><span class="arrow">▶</span></button><div class="items">${items}</div></div>`}).join('');
  qcount.textContent=dn+'/'+tot;
- renderRaidSel();renderHist();renderAch(T);renderSet();renderWard(T);
+ renderRaidSel();renderHist();renderAch(T);renderSet();renderWard(T);if(typeof renderSumToday==='function'){renderSumToday();renderDay()}
  if(T.lv>S.lastLv){const old=stageOf(S.lastLv);S.lastLv=T.lv;save();lvUp(T.lv,st,st>old)}else if(T.lv<S.lastLv){S.lastLv=T.lv;save()}
 }
 const esc=s=>String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
@@ -268,7 +268,7 @@ function tog(id){S.open[id]=!S.open[id];save();render()}
 function tap(id){const h=hab(id),d=day();
  if(id==='train'){go('raid');return}
  if(id==='water'){toast('用上方 +250ml 记录饮水');return}
- if(d.done[id]){if(confirm('取消这项打卡？')){delete d.done[id];if(d.notes)delete d.notes[id];save();render()}return}
+ if(d.done[id]!==undefined){proofModal(id);return}
  if(h.freq!=='day'&&countIn(h)>=h.target){toast(FL[h.freq]+'已达标 ✓');return}
  if(id==='bed'){const n=new Date(),hr=n.getHours();if(hr>=23||hr<4){d.done.bed=0;toast('过了 23:00，这次不加经验');save();render();return}}
  if(['breakfast','lunch','dinner'].includes(id)){const t=prompt('吃了什么？（可留空）','');if(t===null)return;if(t){d.notes=d.notes||{};d.notes[id]=t.slice(0,60)}}
@@ -279,7 +279,7 @@ function water(n){const d=day();d.water=Math.max(0,(d.water||0)+n);
 function celebrate(){const s=document.querySelector('#stage svg');if(s){s.classList.remove('cele');void s.offsetWidth;s.classList.add('cele')}}
 function lvUp(lv,st,evo){modalShow(`<div style="font-size:16px;color:var(--cy);letter-spacing:4px;text-shadow:0 0 8px #22f0ff">LEVEL UP!</div><div class="lv" style="font-size:44px">Lv.${lv}</div><div class="stage" style="width:144px;height:216px;margin:10px auto">${charSVG(st,false,fitNow(st))}</div>${evo?`<div class="ttl">形态进化：${STAGES[st][1]}</div><div class="mut">称号「${STAGES[st][2]}」</div>`:'<div class="mut">离下一形态更近了</div>'}<button class="btn gold" style="margin-top:14px;width:100%" onclick="modal.classList.remove('on')">继续变强</button>`);if(navigator.vibrate)navigator.vibrate([80,60,160]);burst()}
 function burst(){const c=document.getElementById('fx'),x=c.getContext('2d');c.width=innerWidth/4|0;c.height=innerHeight/4|0;c.style.width='100%';c.style.height='100%';const cols=['#ff2bd6','#22f0ff','#ffe14a','#fff'],ps=[];for(let i=0;i<90;i++){const a=Math.random()*6.28,v=1+Math.random()*3;ps.push({x:c.width/2,y:c.height/2.6,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1.5,c:cols[i%4],l:40+Math.random()*30})}let t=0;(function f(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{if(p.l--<=0)return;p.x+=p.vx;p.y+=p.vy;p.vy+=.08;x.fillStyle=p.c;x.fillRect(p.x|0,p.y|0,2,2)});if(t++<80)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
-function modalShow(h){mbox.innerHTML=h;modal.classList.add('on')}
+function modalShow(h){mbox.className='mbox';mbox.innerHTML=h;modal.classList.add('on')}
 document.getElementById('stage').onclick=()=>{const T=totals(),cs=stageOf(T.lv);preview=preview??cs;
  const show=i=>{preview=i;const lk=i>cs;modalShow(`<div class="ttl">${STAGES[i][1]}</div><div class="mut">Lv.${STAGES[i][0]} 解锁 · 「${STAGES[i][2]}」</div><div class="stage" style="width:144px;height:216px;margin:10px auto">${charSVG(i,lk)}</div>${lk?`<div class="mut">🔒 还差 Lv.${STAGES[i][0]-T.lv} 级</div>`:''}<div class="forms" style="margin-top:10px">${STAGES.map((s,j)=>`<div class="fm ${j===i?'sel':''}" onclick="window._pv(${j})">${charSVG(j,j>cs)}<br>Lv.${s[0]}</div>`).join('')}</div>`)};
  window._pv=show;show(cs)};
@@ -313,8 +313,8 @@ function renderHist(){const ws=periodKeys('week'),wd=['一','二','三','四','�
  for(let i=1;i<=n;i++){const k=y+'-'+pad(m+1)+'-'+pad(i),d=S.days[k],x=d?Math.min(CAP,rawXP(d)):0,a=x/CAP;
   h+=`<div onclick="showDay('${k}')" style="background:${x?`rgba(255,59,71,${.15+a*.75})`:'#141826'};${k===today()?'outline:2px solid var(--gold)':''}">${i}</div>`}
  cal.innerHTML=h}
-function showDay(k){const d=S.days[k];if(!d){dayd.textContent=k+'：没有记录';return}
- const names=Object.keys(d.done).map(id=>id.startsWith('train_')?'副本'+id.slice(6):(hab(id)||{}).name||id);
+function showDay(k){return openDay(k);const d=S.days[k];if(!d){dayd.textContent=k+'：没有记录';return}
+ const names=Object.keys(d.done).filter(x=>!x.startsWith('proof_')).map(id=>id.startsWith('train_')?'副本'+id.slice(6):(hab(id)||{}).name||id);
  dayd.innerHTML=`<b>${k}</b> · ${Math.min(CAP,rawXP(d))} XP · 💧${d.water||0}ml<br>${names.join('、')||'—'}${d.notes?Object.entries(d.notes).map(([a,b])=>`<br>📝 ${(hab(a)||{}).name}：${esc(b)}`).join(''):''}`}
 
 /* ---------- achievements ---------- */
@@ -344,8 +344,12 @@ function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.toggle(
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));
 // dev hook for previews: ?lv=N
 const q=new URLSearchParams(location.search);if(q.get('stage')){window._forceStage=+q.get('stage')}
+addEventListener('DOMContentLoaded',()=>{
 document.querySelectorAll('[data-ic]').forEach(e=>e.outerHTML=pi(e.dataset.ic,e.className.replace('pi','')));
 save(true);render();renderSync();pull();
 if(window._forceStage!==undefined){document.getElementById('stage').innerHTML=charSVG(window._forceStage);lv.textContent='Lv.'+STAGES[window._forceStage][0];stname.textContent=STAGES[window._forceStage][2]+' · '+STAGES[window._forceStage][1]}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(q.get('raid')){go('raid');startRaid(q.get('raid'))}if(q.get('page'))go(q.get('page'));if(q.get('slot')){wslot=q.get('slot');render()}if(q.get('fit')){S.outfit=JSON.parse(q.get('fit'));render()}if(q.get('coins')){S.spent=-(+q.get('coins'));render()}if(q.get('pv'))document.getElementById('stage').click();if(q.get('lvup'))lvUp(5,2,true);if(q.get('icon')){document.body.innerHTML='<div id=ic style="width:100vw;height:100vh;background:#07071a"></div>';ic.innerHTML=charSVG(5,false,{...STAGE_FIT[5]}).replace('viewBox="0 0 32 48"','viewBox="7 1.5 18 18" preserveAspectRatio="xMidYMid slice" width="100%" height="100%"')}
+
+if(q.get('day'))openDay(q.get('day'));if(q.get('proof'))proofModal(q.get('proof'));
+uploadQueue();});
