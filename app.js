@@ -1,11 +1,46 @@
 'use strict';
 const KEY='bojiv1',CAP=160;
+/* ---------- pixel icons (8×8) ---------- */
+const PAL={k:'#06060f',m:'#ff2bd6',c:'#22f0ff',y:'#ffe14a',w:'#e8ecff',g:'#4dff9a',r:'#e0222f',s:'#9aa1c8',b:'#3c5aff',o:'#ff8a2a',p:'#b57bff',n:'#8a5a32'};
+const ICONS={
+home:['...yy...','..yyyy..','.yyyyyy.','yyyyyyyy','.cccccc.','.cc..cc.','.cc..cc.','.cccccc.'],
+sword:['......ww','.....wsw','....wsw.','m..wsw..','.mwsw...','..mw....','.mkmm...','m...m...'],
+shirt:['.mm..mm.','mmmmmmmm','mmmmmmmm','.mmmmmm.','..mccm..','..mmmm..','..mmmm..','..mmmm..'],
+chart:['.......y','......yy','..c..y..','.ccc.y..','cc.cy...','c...y...','........','wwwwwwww'],
+trophy:['yyyyyyyy','yywyyyyy','.yyyyyy.','..yyyy..','...yy...','...yy...','..yyyy..','.oooooo.'],
+gear:['...ss...','.s.ss.s.','..ssss..','ssskksss','ssskksss','..ssss..','.s.ss.s.','...ss...'],
+drop:['...c....','...c....','..ccc...','..cwcc..','.ccwccc.','.cccccc.','.cccccc.','..cccc..'],
+scroll:['.yyyyyy.','y.wwww.y','.wkkkkw.','.wwwwww.','.wkkkw..','.wwwwww.','y.wwww.y','.yyyyyy.'],
+shield:['.cccccc.','cmmmmmmc','cmwwwwmc','cmwmmwmc','cmwmmwmc','.cmwwmc.','..cmmc..','...cc...'],
+cal:['.m....m.','mmmmmmmm','wwwwwwww','wkwkwkww','wwwwwwww','wkwkwkww','wwwwwwww','wwwwwwww'],
+disk:['bbbbbbb.','bwwwwwbb','bwwwwwbb','bbbbbbbb','bbsssbbb','bbskkbbb','bbssbbbb','bbbbbbbb'],
+fit:['........','r.....r.','rr...rr.','rrsssrr.','rr...rr.','r.....r.','........','........'],
+learn:['........','.cc.cc..','cwwcwwc.','cwwcwwc.','cwwcwwc.','cwwcwwc.','.cc.cc..','........'],
+music:['....mmm.','....m.m.','....m.m.','....m...','.mmmm...','mmmmm...','mmmm....','.mm.....'],
+inv:['.......g','......gg','.....g.g','g...g...','gg.g....','.gg.....','........','yyyyyyyy'],
+side:['...ww...','..wccw..','..wccw..','..wwww..','.mwwwwm.','.m.ww.m.','...yy...','...o....'],
+fire:['...o....','..oo.o..','..oyoo..','.oyyoo..','.oyyyoo.','oyywyyo.','oyywwyo.','.oyyyo..'],
+coin:['..yyyy..','.yywwyy.','yyw.yyyy','yyw.yyoy','yyw.yyoy','yyyyyyoy','.yyyyoy.','..oooo..'],
+bolt:['....yy..','...yy...','..yy....','.yyyyy..','....yy..','...yy...','..yy....','.y......'],
+star:['...yy...','...yy...','yyyyyyyy','.yyyyyy.','..yyyy..','.yy..yy.','yy....yy','........'],
+egg:['..www...','.wwwww..','wwyyyww.','wwyyyww.','wwwwwww.','.wwwww..','........','........'],
+bucket:['.ssssss.','s......s','.cccccc.','.cccccc.','.cwcccc.','.cccccc.','..cccc..','..ssss..'],
+moon:['..yyy...','.yy.....','yy......','yy......','yy......','.yy...y.','..yyyy..','........'],
+bento:['rrrrrrrr','rwwryygr','rwwryygr','rrrrrrrr','rggroo.r','rggroo.r','rrrrrrrr','........'],
+book:['.mmmmmm.','mwwwwwwm','mwkkkkwm','mwwwwwwm','mwkkkwwm','mwwwwwwm','mmmmmmmm','.m....m.'],
+guitar:['......nk','.....nn.','....nn..','.mmmn...','mmkmm...','mmmmm...','.mmm....','........'],
+lock:['..ssss..','.s....s.','.s....s.','yyyyyyyy','yyykkyyy','yyykkyyy','yyyyyyyy','........'],
+rainbow:['..mmmm..','.myyyym.','mycccc ym'.slice(0,8),'myc..cym','myc..cym','........','........','........'],
+dna:['c....m..','.c..m...','..cm....','..mc....','.m..c...','m....c..','.m..c...','..mc....'],
+armor:['.rrrrrr.','rryyyyrr','ryccyccr','ryyyyyyr','rryyyyrr','.rrrrrr.','..rcrr..','...rr...'],
+hundred:['k.kkk.kk','k.k.k.kk','k.k.k.kk','k.kkk.kk','........','yyyyyyyy','.oooooo.','..oooo..']};
+function pi(name,cls){const a=ICONS[name];if(!a)return'';let o='';a.forEach((row,y)=>{for(let x=0;x<8;x++){const c=PAL[row[x]];if(c)o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`}});return `<svg class="pi ${cls||''}" viewBox="0 0 8 8" shape-rendering="crispEdges">${o}</svg>`}
 const DOMS=[
-{id:'fit',name:'健身',attr:'体魄',ic:'💪',col:'#ff3b47',by:'Veronica'},
-{id:'learn',name:'学习',attr:'智识',ic:'📚',col:'#3fd7ff',by:'Edith'},
-{id:'music',name:'音乐',attr:'乐感',ic:'🎸',col:'#b57bff',by:''},
-{id:'inv',name:'投资',attr:'财商',ic:'📈',col:'#ffc24a',by:'Friday'},
-{id:'side',name:'副业',attr:'创造',ic:'🚀',col:'#3ee08f',by:'Forge'}];
+{id:'fit',name:'健身',attr:'体魄',ic:pi('fit','s'),col:'#ff3b47',by:'Veronica'},
+{id:'learn',name:'学习',attr:'智识',ic:pi('learn','s'),col:'#3fd7ff',by:'Edith'},
+{id:'music',name:'音乐',attr:'乐感',ic:pi('music','s'),col:'#b57bff',by:''},
+{id:'inv',name:'投资',attr:'财商',ic:pi('inv','s'),col:'#ffc24a',by:'Friday'},
+{id:'side',name:'副业',attr:'创造',ic:pi('side','s'),col:'#3ee08f',by:'Forge'}];
 const H=(id,dom,name,desc,freq,target,xp,on=true,extra={})=>({id,dom,name,desc,freq,target,xp,on,...extra});
 const DEF_H=[
 H('breakfast','fit','早餐','拍照或记一下吃了什么','day',1,15),H('lunch','fit','午餐','一份蛋白质＋半盘蔬菜','day',1,15),H('dinner','fit','晚餐','一份蛋白质＋半盘蔬菜','day',1,15),
@@ -22,7 +57,7 @@ H('data','side','数据复盘','晚上看当天数据写一句结论','day',1,10
 const PLANS={A:{name:'推拉',boss:'驼背魔像',ex:[['俯卧撑',3,'8–12 次',60],['弹力带划船',3,'12 次',60],['弹力带肩外展',2,'15 次',45],['平板支撑',3,'30–45 秒',45]]},
 B:{name:'下肢核心',boss:'久坐巨兽',ex:[['深蹲',3,'12 次',60],['臀桥',3,'12 次',45],['弓步蹲',2,'每腿 10 次',60],['死虫 / 侧平板',2,'练满',45]]},
 C:{name:'全身收紧',boss:'脂肪领主',ex:[['俯卧撑变式',3,'力竭前 2 次',60],['弹力带划船',3,'12–15 次',60],['深蹲或臀桥',3,'12–15 次',45],['核心选一',1,'练满',0]]}};
-const STAGES=[[1,'普通身材','新手村民'],[3,'运动觉醒','晨练少年'],[5,'肩臂显线','薄肌学徒'],[8,'腹肌轮廓','腹肌显影者'],[12,'明显薄肌','薄肌战士'],[16,'银红战甲','Veronica 战甲']];
+const STAGES=[[1,'普通身材','新手村民'],[3,'运动觉醒','晨练少年'],[5,'肩臂显线','薄肌学徒'],[8,'腹肌轮廓','腹肌显影者'],[12,'明显薄肌','薄肌战士'],[16,'银红战甲','赛博战士']];
 const need=n=>300+100*(n-1);
 const pad=n=>String(n).padStart(2,'0'),dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const pd=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
@@ -71,80 +106,90 @@ const STAGE_FIT=[{bg:'bedroom',hair:'side',top:'greyT',bottom:'jeans',shoes:'can
 {bg:'gym',hair:'buzz',top:'none',bottom:'shorts',shoes:'runner',head:'band',acc:'noacc'},
 {bg:'roof',hair:'slick',top:'compress',bottom:'jogger',shoes:'runner',head:'band',acc:'noacc'},
 {bg:'lab',hair:'slick',top:'armor',bottom:'armorleg',shoes:'armorboot',head:'helmet',acc:'noacc'}];
-const BODY=[{sh:22,wa:21},{sh:23,wa:19},{sh:25,wa:17},{sh:26,wa:16},{sh:27,wa:15.5},{sh:28,wa:15}];
-function charSVG(st,locked,fit,noBg){fit=fit||STAGE_FIT[st];const{sh,wa}=BODY[st],c=60,sk='#efc19c',ln='#a8724e';
- const torso=`M${c-sh} 50 Q${c} 44 ${c+sh} 50 L${c+wa+(st===0?3:0)} 86 Q${c+wa} 100 ${c+wa-1} 102 L${c-wa+1} 102 Q${c-wa} 100 ${c-wa-(st===0?3:0)} 86 Z`;
- const legs=`M${c-wa+1} 100 L${c-14} 158 L${c-4} 158 L${c} 108 L${c+4} 158 L${c+14} 158 L${c+wa-1} 100 Z`;
- const armP=s=>{const x=c+s*sh,ux=x+s*6,hx=x+s*9,bi=st>=2?4.8:3.6;return `M${x} 52 Q${ux+s*bi} 70 ${ux} 82 L${hx} 104`};
- const sleeve=(col,long)=>[-1,1].map(s=>long?`<path d="${armP(s)}" stroke="${col}" stroke-width="${st>=2?10.5:9.5}" stroke-linecap="round" fill="none"/>`:`<path d="M${c+s*sh} 51 Q${c+s*(sh+7)} 60 ${c+s*(sh+7)} 66" stroke="${col}" stroke-width="12" stroke-linecap="round" fill="none"/>`).join('');
- let g='';
- // background
- const BG={bedroom:`<rect width="120" height="170" fill="#251f33"/><rect x="10" y="18" width="30" height="36" rx="3" fill="#36507a"/><path d="M25 18v36M10 36h30" stroke="#251f33" stroke-width="2"/><circle cx="33" cy="26" r="4" fill="#f5e6a8"/><rect x="72" y="118" width="48" height="22" rx="4" fill="#4a3a5e"/><rect x="0" y="150" width="120" height="20" fill="#1a1524"/>`,
- gym:`<rect width="120" height="170" fill="#161a24"/><rect x="0" y="150" width="120" height="20" fill="#20252f"/><path d="M8 40v110M28 40v110M8 70h20M8 110h20" stroke="#3a4152" stroke-width="3"/><rect x="88" y="138" width="24" height="5" rx="2" fill="#555d70"/><circle cx="90" cy="140" r="6" fill="#2b2f3a"/><circle cx="110" cy="140" r="6" fill="#2b2f3a"/><text x="100" y="30" font-size="9" fill="#ff3b4760" text-anchor="middle" font-weight="900">GYM</text>`,
- roof:`<defs><linearGradient id="ng" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0f2c"/><stop offset="1" stop-color="#3a1b4a"/></linearGradient></defs><rect width="120" height="170" fill="url(#ng)"/><circle cx="95" cy="22" r="8" fill="#f5e6a8"/><circle cx="20" cy="15" r=".8" fill="#fff"/><circle cx="45" cy="30" r=".8" fill="#fff"/><circle cx="70" cy="12" r=".8" fill="#fff"/><path d="M0 130V100h12V88h10v20h8V80h14v50h8V95h12v35h10V90h16v40h10V105h20v25Z" fill="#141530"/><rect x="0" y="150" width="120" height="20" fill="#24203a"/><path d="M0 150h120" stroke="#5a4a7a"/>`,
- stage:`<rect width="120" height="170" fill="#12071c"/><path d="M45 0L15 160h90L75 0Z" fill="#b57bff22"/><path d="M60 0L30 160h60Z" fill="#ff3b4718"/><rect x="0" y="152" width="120" height="18" fill="#2a1438"/><circle cx="12" cy="10" r="5" fill="#b57bff"/><circle cx="108" cy="10" r="5" fill="#ff3b47"/>`,
- lab:`<rect width="120" height="170" fill="#07131f"/><path d="M0 40h120M0 80h120M0 120h120M30 0v170M60 0v170M90 0v170" stroke="#3fd7ff14"/><circle cx="60" cy="95" r="52" fill="none" stroke="#3fd7ff40" stroke-dasharray="4 4"><animateTransform attributeName="transform" type="rotate" from="0 60 95" to="360 60 95" dur="20s" repeatCount="indefinite"/></circle><rect x="0" y="152" width="120" height="18" fill="#0e2233"/><path d="M0 152h120" stroke="#3fd7ff60"/>`};
- const bgs=noBg?'':(BG[fit.bg]||'');
- if(st>=4)g+=`<ellipse cx="60" cy="95" rx="48" ry="70" fill="url(#au${st})" opacity=".6"/>`;
- g+=`<ellipse cx="60" cy="163" rx="30" ry="4" fill="#000" opacity=".45"/>`;
- // body
- g+=`<path d="${legs}" fill="${sk}"/>`;
- // accessory behind (guitar)
- if(fit.acc==='guitar')g+=`<g transform="rotate(-25 92 110)"><rect x="89" y="58" width="5" height="40" fill="#5a3a22"/><rect x="87" y="54" width="9" height="8" rx="2" fill="#222"/><path d="M80 108 Q78 96 88 96 Q92 92 96 96 Q106 96 104 108 Q108 124 92 126 Q76 124 80 108Z" fill="#d8202c" stroke="#fff" stroke-width="1"/><circle cx="92" cy="110" r="3" fill="#111"/></g>`;
- g+=[-1,1].map(s=>`<path d="${armP(s)}" stroke="${sk}" stroke-width="${st>=2?9:8}" stroke-linecap="round" fill="none"/>`+(st>=2?`<path d="M${c+s*(sh+3)} 58 Q${c+s*(sh+9)} 66 ${c+s*(sh+7)} 76" stroke="#0003" stroke-width="1.4" fill="none"/>`:'')+`<circle cx="${c+s*(sh+9)}" cy="105" r="4.5" fill="${sk}"/>`).join('');
- g+=`<path d="${torso}" fill="${sk}"/>`;
- if(st>=2)g+=`<path d="M${c-sh+6} 58 Q${c-8} 64 ${c} 60 Q${c+8} 64 ${c+sh-6} 58" stroke="${ln}" stroke-width="1.3" fill="none"/>`;
- if(st>=3)for(let i=0;i<3;i++)g+=`<rect x="${c-8}" y="${68+i*9}" width="7" height="7" rx="2.5" fill="#0001" stroke="${ln}" stroke-width=".9"/><rect x="${c+1}" y="${68+i*9}" width="7" height="7" rx="2.5" fill="#0001" stroke="${ln}" stroke-width=".9"/>`;
- else if(st<2)g+=`<circle cx="60" cy="88" r="1" fill="${ln}"/>`;
- // bottom
- const B={jeans:`<path d="${legs}" fill="#3a4a6b"/><path d="M${c-wa+1} 100h${2*wa-2}" stroke="#2a3550" stroke-width="3"/>`,
- jogger:`<path d="${legs}" fill="#1d2333"/><path d="M${c-14} 154h10M${c+4} 154h10" stroke="#3a425e" stroke-width="3"/><path d="M${c-wa+2} 104 L${c-13} 150M${c+wa-2} 104 L${c+13} 150" stroke="#ff3b47" stroke-width="1"/>`,
- shorts:`<path d="M${c-wa+1} 100 L${c-wa+2} 124 L${c-2} 124 L${c} 110 L${c+2} 124 L${c+wa-2} 124 L${c+wa-1} 100Z" fill="#20242f"/><path d="M${c-wa+2} 104 L${c-wa+2} 123M${c+wa-2} 104 L${c+wa-2} 123" stroke="#ff3b47" stroke-width="1.6"/>`,
- armorleg:`<path d="${legs}" fill="#c9ced8"/><path d="M${c-12} 128h7M${c+5} 128h7" stroke="#d8202c" stroke-width="3"/><path d="M${c-wa+1} 100h${2*wa-2}" stroke="#d8202c" stroke-width="4"/>`}[fit.bottom]||'';
- g+=B;
- const SH={canvas:['#55607a','#e9ecf5'],runner:['#fff','#ff3b47'],hightop:['#d8202c','#fff'],armorboot:['#d8202c','#c9ced8']}[fit.shoes]||['#333','#555'];
- const tall=fit.shoes==='hightop'||fit.shoes==='armorboot'?6:0;
- g+=`<rect x="${c-16}" y="${156-tall}" width="13" height="${6+tall}" rx="3" fill="${SH[0]}"/><rect x="${c+3}" y="${156-tall}" width="13" height="${6+tall}" rx="3" fill="${SH[0]}"/><path d="M${c-15} 159h11M${c+4} 159h11" stroke="${SH[1]}" stroke-width="1.5"/>`;
- // top
- const T={
- greyT:`<path d="${torso}" fill="#7b8296"/>${sleeve('#7b8296')}<circle cx="60" cy="66" r="6" fill="none" stroke="#ffffff40" stroke-width="2"/>`,
- sportT:`<path d="${torso}" fill="#2b6fd6"/>${sleeve('#2b6fd6')}<path d="M${c-sh+3} 52 L${c-wa+2} 100 M${c+sh-3} 52 L${c+wa-2} 100" stroke="#fff" stroke-width="2"/>`,
- tank:`<path d="M${c-sh+7} 50 L${c-9} 47 Q60 60 ${c+9} 47 L${c+sh-7} 50 L${c+wa} 86 Q${c+wa} 100 ${c+wa-1} 102 L${c-wa+1} 102 Q${c-wa} 100 ${c-wa} 86Z" fill="#20242f"/><text x="60" y="82" font-size="8" fill="#ff3b47" text-anchor="middle" font-weight="900">BOJI</text>`,
- hoodie:`${sleeve('#3a3f55',1)}<path d="${torso}" fill="#3a3f55"/><path d="M48 47 Q60 58 72 47" stroke="#2c3044" stroke-width="5" fill="none"/><path d="M57 52v10M63 52v10" stroke="#e9ecf5" stroke-width="1"/><rect x="${c-11}" y="84" width="22" height="12" rx="3" fill="#2c3044"/>`,
- compress:`${sleeve('#111319',1)}<path d="${torso}" fill="#111319"/><path d="M${c-sh+3} 52 Q60 70 ${c+sh-3} 52 M60 62V100" stroke="#d8202c" stroke-width="1.4" fill="none"/><path d="M${c-8} 76h16M${c-7} 88h14" stroke="#ffffff22"/>`,
- pingpong:`<path d="${torso}" fill="#d8202c"/>${sleeve('#d8202c')}<path d="M52 47 L60 56 L68 47" stroke="#fff" stroke-width="3" fill="none"/><path d="M${c-sh+2} 54 L${c-wa+1} 100" stroke="#ffd24a" stroke-width="3"/><text x="66" y="72" font-size="6" fill="#ffd24a">★</text>`,
- leather:`${sleeve('#1a1a1c',1)}<path d="${torso}" fill="#1a1a1c"/><path d="M54 48 L56 102 L64 102 L66 48Z" fill="#e9ecf5"/><path d="M54 48 L48 64 L55 70 M66 48 L72 64 L65 70" stroke="#3a3a40" stroke-width="2" fill="none"/><path d="M64 60v40" stroke="#888" stroke-width=".8"/>`,
- suit:`${sleeve('#23283a',1)}<path d="${torso}" fill="#23283a"/><path d="M53 47 L60 70 L67 47Z" fill="#fff"/><path d="M60 50 L58 54 L60 68 L62 54Z" fill="#d8202c"/><path d="M53 47 L50 62 L60 72 M67 47 L70 62 L60 72" stroke="#151826" stroke-width="2" fill="none"/><circle cx="60" cy="84" r="1.2" fill="#888"/>`,
- armor:`${sleeve('#c9ced8',1)}<path d="${torso}" fill="#d7dbe4"/><path d="M${c-sh+2} 50 Q60 64 ${c+sh-2} 50 L${c+sh-6} 62 Q60 74 ${c-sh+6} 62 Z" fill="#d8202c"/><path d="M${c-wa+2} 86 L60 96 L${c+wa-2} 86" stroke="#d8202c" stroke-width="3" fill="none"/><circle cx="60" cy="72" r="6.5" fill="#bff6ff"/><circle cx="60" cy="72" r="4" fill="#3fd7ff"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle><path d="M60 80V100M${c-8} 86h16M${c-7} 93h14" stroke="#9aa1b0" stroke-width="1"/><circle cx="${c-sh}" cy="52" r="7" fill="#d8202c"/><circle cx="${c+sh}" cy="52" r="7" fill="#d8202c"/>`}[fit.top]||'';
- g+=T;
- if(st===5&&fit.top!=='armor')g+=`<circle cx="60" cy="72" r="3.5" fill="#3fd7ff" opacity=".85"><animate attributeName="opacity" values=".9;.4;.9" dur="1.8s" repeatCount="indefinite"/></circle>`;
- // hands accessories
- const rh=[c+sh+9,105],lh=[c-sh-9,105];
- g+={towel:`<path d="M${c-sh-3} 46 Q${c-sh+6} 44 ${c-sh+9} 50 L${c-sh+5} 76 L${c-sh-3} 74Z" fill="#f2f4f8"/><path d="M${c-sh-2} 70h7" stroke="#3fd7ff" stroke-width="2"/>`,
- bottle:`<rect x="${rh[0]-4}" y="${rh[1]-16}" width="8" height="18" rx="3" fill="#3fd7ff"/><rect x="${rh[0]-3}" y="${rh[1]-19}" width="6" height="4" fill="#222"/><circle cx="${rh[0]}" cy="${rh[1]}" r="4.5" fill="${sk}"/>`,
- book:`<rect x="${lh[0]-9}" y="${lh[1]-10}" width="13" height="17" rx="1.5" fill="#d8202c"/><path d="M${lh[0]-7} ${lh[1]-6}h9" stroke="#fff" stroke-width="1"/><circle cx="${lh[0]}" cy="${lh[1]}" r="4.5" fill="${sk}"/>`,
- paddle:`<rect x="${rh[0]-1.5}" y="${rh[1]}" width="3" height="10" fill="#8a5a32"/><circle cx="${rh[0]+2}" cy="${rh[1]+18}" r="9" fill="#d8202c" stroke="#111" stroke-width="1"/><circle cx="${rh[0]}" cy="${rh[1]}" r="4.5" fill="${sk}"/><circle cx="${rh[0]+12}" cy="${rh[1]-6}" r="2.5" fill="#ffb347"/>`}[fit.acc]||'';
- // neck & head
- g+=`<rect x="55" y="38" width="10" height="10" rx="3" fill="${sk}"/>`;
- if(fit.top==='hoodie')g+=`<path d="M44 44 Q60 36 76 44 Q74 52 60 52 Q46 52 44 44Z" fill="#3a3f55"/>`;
- g+=`<path d="M45 26 Q45 8 60 8 Q75 8 75 26 Q75 40 60 42 Q45 40 45 26Z" fill="${sk}"/>`;
- if(fit.head==='helmet'){g+=`<path d="M44 26 Q44 6 60 6 Q76 6 76 26 Q76 41 60 43 Q44 41 44 26Z" fill="#d8202c"/><path d="M49 22 Q60 18 71 22 L69 38 Q60 41 51 38Z" fill="#f2c94c"/><path d="M51 26h7M62 26h7" stroke="#bff6ff" stroke-width="2.5" stroke-linecap="round"/>`}
- else{
-  g+=`<circle cx="54" cy="27" r="1.8" fill="#222"/><circle cx="66" cy="27" r="1.8" fill="#222"/>`;
-  if(st>=2)g+=`<path d="M51 23.5l5 1M69 23.5l-5 1" stroke="#222" stroke-width="1.3"/>`;
-  g+=`<path d="M56 35 Q60 ${st?38:36.5} 64 35" stroke="#a5513a" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
-  if(st===0)g+=`<circle cx="50.5" cy="32" r="2" fill="#ff8a8a50"/><circle cx="69.5" cy="32" r="2" fill="#ff8a8a50"/>`;
-  const hc='#16130f';
-  g+={side:`<path d="M44 26 Q42 6 60 5 Q79 5 76 25 Q73 14 66 13 Q58 17 50 14 Q46 18 44 26Z" fill="${hc}"/>`,
-  buzz:`<path d="M45 22 Q45 8 60 8 Q75 8 75 22 Q70 14 60 14 Q50 14 45 22Z" fill="${hc}" opacity=".9"/>`,
-  slick:`<path d="M44 24 Q43 4 62 4 Q78 5 76 22 Q72 12 60 12 Q50 12 44 24Z" fill="${hc}"/><path d="M52 8 Q62 5 70 9" stroke="#ffffff40" stroke-width="1.5" fill="none"/>`,
-  dread:`<path d="M44 24 Q43 5 60 5 Q77 5 76 24 Q70 13 60 13 Q50 13 44 24Z" fill="${hc}"/>`+[46,50,70,74].map((x,i)=>`<path d="M${x} 18 Q${x+(i<2?-3:3)} 34 ${x+(i<2?-2:2)} 48" stroke="${hc}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`).join('')}[fit.hair]||'';
-  g+={band:`<path d="M45 19 Q60 13 75 19 L75 23 Q60 17 45 23Z" fill="#ff3b47"/><path d="M75 20 l6 4 l-6 1" fill="#ff3b47"/>`,
-  cap:`<path d="M44 20 Q44 4 60 4 Q76 4 76 20Z" fill="#2b6fd6"/><path d="M60 20 Q76 18 86 22 L76 23Z" fill="#1d4fa0"/><circle cx="60" cy="5" r="1.5" fill="#fff"/><text x="57" y="17" font-size="7" fill="#fff" font-weight="900">B</text>`,
-  phones:`<path d="M43 26 Q42 2 60 2 Q78 2 77 26" stroke="#222" stroke-width="3" fill="none"/><rect x="39" y="21" width="7" height="12" rx="3" fill="#d8202c"/><rect x="74" y="21" width="7" height="12" rx="3" fill="#d8202c"/>`}[fit.head]||'';
- }
- if(locked)return `<svg viewBox="0 0 120 170" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sil"><feFlood flood-color="#232842"/><feComposite in2="SourceAlpha" operator="in"/></filter></defs><g filter="url(#sil)">${g}</g><text x="60" y="95" font-size="22" text-anchor="middle" fill="#4a5272">?</text></svg>`;
- return `<svg viewBox="0 0 120 170" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="au${st}"><stop offset="0" stop-color="${st===5?'#3fd7ff':'#ff3b47'}" stop-opacity=".45"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs>${bgs}<g class="bob">${g}</g></svg>`}
+/* ---------- pixel sprite engine (32×48) ---------- */
+const W=32,HH=48,OUT='#06060f';
+function PB(){return new Array(W*HH).fill(null)}
+function PR(P,x,y,w,h,c){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(i>=0&&i<W&&j>=0&&j<HH)P[j*W+i]=c}
+function D(P,x,y,c){PR(P,x,y,1,1,c)}
+const SK=['#f2c29a','#d99a73','#b9785a'];// skin light/mid/shadow
+function torsoRows(st){const rows=[];const sh=st>=2?1:0,bel=st===0;
+ for(let y=18;y<=29;y++){let x0=11,x1=20;if(y<=20){x0-=sh;x1+=sh}else if(st>=3&&y>=24){x0=12;x1=19}
+  if(bel&&y>=23&&y<=28){x0=10;x1=21}rows.push([y,x0,x1])}return rows}
+function armX(st){const sh=st>=2?1:0;return[[9-sh,10-sh],[21+sh,22+sh]]}
+function body(P,st){const[a,b,c]=SK;
+ torsoRows(st).forEach(([y,x0,x1])=>{PR(P,x0,y,x1-x0+1,1,a);D(P,x1,y,b)});
+ armX(st).forEach(([x0,x1],k)=>{PR(P,x0,18,x1-x0+1,11,a);D(P,k?x1:x0,18,b);PR(P,k?x1:x0,19,1,10,b);PR(P,x0,29,2,2,a)});
+ if(st>=2)armX(st).forEach(([x0,x1],k)=>{D(P,k?x0:x1,20,'#ffe0c4');PR(P,k?x0-0:x1,21,1,2,c)});
+ PR(P,12,30,8,3,a);PR(P,12,33,3,9,a);PR(P,17,33,3,9,a);PR(P,14,33,1,9,b);PR(P,19,33,1,9,b);
+ // chest/abs
+ if(st>=2){PR(P,12,21,3,1,c);PR(P,17,21,3,1,c)}
+ if(st>=3){for(let i=0;i<3;i++){D(P,14,23+i*2,c);D(P,17,23+i*2,c)}PR(P,15,22,2,1,b);PR(P,15,24,2,1,b);PR(P,15,26,2,1,b)}
+ if(st>=4){D(P,15,28,c);D(P,16,28,c)}
+ // head
+ PR(P,11,7,10,11,a);PR(P,20,8,1,9,b);PR(P,10,11,1,3,a);PR(P,21,11,1,3,b);// ears
+ PR(P,12,17,8,1,b);}
+function face(P,st){D(P,13,12,'#fff');D(P,14,12,'#1b1430');D(P,17,12,'#1b1430');D(P,18,12,'#fff');D(P,13,13,'#fff');D(P,14,13,'#1b1430');D(P,17,13,'#1b1430');D(P,18,13,'#fff');
+ if(st>=2){PR(P,13,11,2,1,'#3a2a20');PR(P,17,11,2,1,'#3a2a20')}
+ PR(P,15,15,2,1,st?'#a5513a':'#c2705a');if(st>=1){D(P,14,15,'#a5513a')}
+ if(st===0){D(P,12,14,'#ff8f9a');D(P,19,14,'#ff8f9a')}}
+function fillTorso(P,st,c,shade,from=18,to=29){torsoRows(st).forEach(([y,x0,x1])=>{if(y>=from&&y<=to){PR(P,x0,y,x1-x0+1,1,c);D(P,x1,y,shade);D(P,x0,y,shade)}})}
+function sleeves(P,st,c,shade,long){armX(st).forEach(([x0,x1],k)=>{const h=long?11:4;PR(P,x0,18,x1-x0+1,h,c);PR(P,k?x1:x0,18,1,h,shade)})}
+const TOPS={
+ greyT:(P,st)=>{fillTorso(P,st,'#8a90a8','#666c85');sleeves(P,st,'#8a90a8','#666c85');PR(P,14,18,4,1,SK[0]);PR(P,14,21,4,3,'#a4aac4');PR(P,15,22,2,1,'#ff2bd6')},
+ sportT:(P,st)=>{fillTorso(P,st,'#2f6fe0','#1f4fb0');sleeves(P,st,'#2f6fe0','#1f4fb0');PR(P,14,18,4,1,SK[0]);torsoRows(st).forEach(([y,x0,x1])=>{D(P,x0+1,y,'#fff');D(P,x1-1,y,'#fff')})},
+ tank:(P,st)=>{fillTorso(P,st,'#1c1f33','#121426',19);PR(P,13,18,2,1,'#1c1f33');PR(P,18,18,2,1,'#1c1f33');PR(P,14,23,4,2,'#ff2bd6');D(P,15,25,'#22f0ff');D(P,16,25,'#22f0ff')},
+ hoodie:(P,st)=>{fillTorso(P,st,'#3b2f6b','#2a2150');sleeves(P,st,'#3b2f6b','#2a2150',1);PR(P,13,26,6,3,'#2a2150');D(P,14,19,'#ffe14a');D(P,17,19,'#ffe14a');D(P,14,20,'#ffe14a');D(P,17,20,'#ffe14a');PR(P,12,16,8,2,'#4a3c82');PR(P,11,17,1,2,'#4a3c82');PR(P,20,17,1,2,'#4a3c82')},
+ compress:(P,st)=>{fillTorso(P,st,'#121220','#0a0a14');sleeves(P,st,'#121220','#0a0a14',1);torsoRows(st).forEach(([y,x0,x1])=>{if(y<22){D(P,x0+1+(y-18),y,'#ff2bd6');D(P,x1-1-(y-18),y,'#ff2bd6')}});PR(P,15,22,2,8,'#1a6a80');armX(st).forEach(([x0],k)=>PR(P,x0+(k?1:0),19,1,9,'#ff2bd6'))},
+ pingpong:(P,st)=>{fillTorso(P,st,'#e0222f','#a8141f');sleeves(P,st,'#e0222f','#a8141f');PR(P,13,18,6,1,'#fff');D(P,15,19,'#fff');D(P,16,19,'#fff');torsoRows(st).forEach(([y,x0])=>D(P,x0+1,y,'#ffe14a'));D(P,18,21,'#ffe14a')},
+ leather:(P,st)=>{fillTorso(P,st,'#17171d','#0c0c10');sleeves(P,st,'#17171d','#0c0c10',1);PR(P,15,18,2,12,'#e8e8f0');PR(P,17,19,1,10,'#22f0ff');PR(P,13,18,2,3,'#2a2a33');PR(P,17,18,2,1,'#2a2a33')},
+ suit:(P,st)=>{fillTorso(P,st,'#232a4a','#161b33');sleeves(P,st,'#232a4a','#161b33',1);PR(P,14,18,4,1,'#fff');PR(P,15,19,2,3,'#fff');PR(P,15,19,2,1,'#e0222f');PR(P,15,20,2,4,'#e0222f');D(P,15,24,'#e0222f');D(P,16,26,'#ffe14a');D(P,16,28,'#ffe14a');armX(st).forEach(([x0])=>PR(P,x0,28,2,1,'#fff'))},
+ armor:(P,st)=>{fillTorso(P,st,'#cfd5e2','#9aa1b6');sleeves(P,st,'#cfd5e2','#9aa1b6',1);armX(st).forEach(([x0])=>{PR(P,x0-1,18,4,3,'#e0222f');PR(P,x0,25,2,2,'#e0222f')});PR(P,12,18,8,2,'#e0222f');PR(P,13,26,6,1,'#e0222f');PR(P,12,29,8,1,'#e0222f');PR(P,14,21,4,4,'#0b2a3a');PR(P,15,22,2,2,'#22f0ff')},
+ none:()=>{}};
+const BOTS={
+ jeans:(P)=>{PR(P,12,30,8,3,'#3c5a9a');PR(P,12,33,3,9,'#3c5a9a');PR(P,17,33,3,9,'#3c5a9a');PR(P,14,33,1,9,'#2a4070');PR(P,19,33,1,9,'#2a4070');PR(P,12,30,8,1,'#2a2a33');D(P,15,30,'#ffe14a')},
+ jogger:(P)=>{PR(P,12,30,8,3,'#1e2035');PR(P,12,33,3,9,'#1e2035');PR(P,17,33,3,9,'#1e2035');D(P,12,33,'#ff2bd6');PR(P,12,31,1,10,'#ff2bd6');PR(P,19,31,1,10,'#ff2bd6');PR(P,12,41,3,1,'#33365a');PR(P,17,41,3,1,'#33365a')},
+ shorts:(P)=>{PR(P,12,30,8,3,'#1e2035');PR(P,12,33,3,3,'#1e2035');PR(P,17,33,3,3,'#1e2035');PR(P,12,35,3,1,'#22f0ff');PR(P,17,35,3,1,'#22f0ff')},
+ armorleg:(P)=>{PR(P,12,30,8,3,'#cfd5e2');PR(P,12,33,3,9,'#cfd5e2');PR(P,17,33,3,9,'#cfd5e2');PR(P,14,33,1,9,'#9aa1b6');PR(P,19,33,1,9,'#9aa1b6');PR(P,12,30,8,1,'#e0222f');PR(P,12,36,3,2,'#e0222f');PR(P,17,36,3,2,'#e0222f')}};
+const SHOES={canvas:['#5a6080','#e8e8f0',0],runner:['#f4f4fa','#ff2bd6',0],hightop:['#e0222f','#fff',2],armorboot:['#e0222f','#cfd5e2',3]};
+function shoes(P,id){const[a,b,t]=SHOES[id]||SHOES.canvas;PR(P,11,42-t,4,2+t,a);PR(P,17,42-t,4,2+t,a);PR(P,11,43,4,1,b);PR(P,17,43,4,1,b);if(t){D(P,13,42-t,b);D(P,19,42-t,b)}}
+const HC='#1a1424',HL='#3a2a50';
+const HAIRS={side:P=>{PR(P,11,5,10,3,HC);PR(P,10,6,12,2,HC);PR(P,10,8,2,4,HC);PR(P,20,8,2,2,HC);PR(P,12,8,5,1,HC);PR(P,12,9,3,1,HC);PR(P,13,5,4,1,HL)},
+ buzz:P=>{PR(P,11,6,10,2,'#2a2236');PR(P,10,7,1,3,'#2a2236');PR(P,21,7,1,3,'#2a2236');PR(P,12,8,8,1,'#2a2236')},
+ slick:P=>{PR(P,11,4,10,4,HC);PR(P,10,5,12,3,HC);PR(P,10,8,1,3,HC);PR(P,21,8,1,3,HC);PR(P,13,4,6,1,'#ff2bd6');PR(P,12,5,3,1,HL)},
+ dread:P=>{PR(P,11,5,10,3,HC);PR(P,10,6,12,3,HC);[9,11,20,22].forEach((x,i)=>{for(let y=8;y<20;y++)D(P,x,y,(y+i)%3?HC:'#22f0ff')})}};
+const HEADS={band:P=>{PR(P,10,8,12,2,'#ff2bd6');PR(P,22,9,2,1,'#ff2bd6');D(P,23,10,'#ff2bd6');PR(P,10,8,12,1,'#ff7ae8')},
+ cap:P=>{PR(P,10,4,12,4,'#22c4e0');PR(P,11,3,10,1,'#22c4e0');PR(P,17,8,8,1,'#178aa0');PR(P,14,5,3,2,'#ffe14a');PR(P,10,7,12,1,'#178aa0')},
+ phones:P=>{PR(P,12,3,8,1,'#222');D(P,11,4,'#222');D(P,20,4,'#222');PR(P,10,5,1,4,'#222');PR(P,21,5,1,4,'#222');PR(P,9,9,2,5,'#ff2bd6');PR(P,21,9,2,5,'#ff2bd6');D(P,9,11,'#22f0ff');D(P,22,11,'#22f0ff')},
+ helmet:P=>{PR(P,10,5,12,13,'#e0222f');PR(P,11,4,10,1,'#e0222f');PR(P,12,9,8,8,'#ffd24a');PR(P,13,12,2,1,'#22f0ff');PR(P,17,12,2,1,'#22f0ff');PR(P,14,15,4,1,'#c9a030');PR(P,21,6,1,11,'#a8141f');PR(P,13,5,6,1,'#ff6a72')}};
+const ACCS={towel:P=>{PR(P,8,17,3,7,'#f4f4fa');PR(P,10,16,4,2,'#f4f4fa');PR(P,8,22,3,1,'#22f0ff')},
+ bottle:(P,st)=>{const x=armX(st)[1][1]+1;PR(P,x,24,2,6,'#22f0ff');PR(P,x,23,2,1,'#222');D(P,x,26,'#bff9ff')},
+ book:(P,st)=>{const x=armX(st)[0][0]-2;PR(P,x,26,3,5,'#ff2bd6');PR(P,x,26,1,5,'#a01890');D(P,x+1,27,'#fff')},
+ paddle:(P,st)=>{const x=armX(st)[1][1];PR(P,x+1,29,1,3,'#8a5a32');PR(P,x,32,4,4,'#e0222f');PR(P,x+1,31,2,1,'#e0222f');PR(P,x+1,36,2,1,'#e0222f');D(P,x+4,27,'#ffe14a')},
+ guitar:(P,st)=>{const x=armX(st)[1][1]+1;for(let i=0;i<10;i++)D(P,x+3-Math.floor(i/3),14+i,'#6a4020');PR(P,x+3,12,2,3,'#222');PR(P,x-1,24,5,6,'#ff2bd6');PR(P,x,23,3,1,'#ff2bd6');PR(P,x,30,3,1,'#ff2bd6');D(P,x+1,26,'#111');D(P,x+1,27,'#111');PR(P,x-1,24,1,6,'#a01890')}};
+const BGS={
+ bedroom:P=>{PR(P,0,0,32,48,'#1c1433');PR(P,0,0,32,2,'#251a44');PR(P,2,8,10,12,'#0c1430');PR(P,2,8,10,1,'#ff2bd6');PR(P,2,19,10,1,'#ff2bd6');PR(P,2,8,1,12,'#ff2bd6');PR(P,11,8,1,12,'#ff2bd6');PR(P,4,14,2,6,'#24305a');PR(P,7,12,3,8,'#2a2050');D(P,4,15,'#ffe14a');D(P,8,13,'#22f0ff');D(P,8,16,'#22f0ff');PR(P,22,34,10,5,'#3a2a66');PR(P,22,33,10,1,'#5a44a0');PR(P,26,31,4,2,'#ececf4');PR(P,0,44,32,4,'#120c22');PR(P,0,44,32,1,'#2e2058')},
+ gym:P=>{PR(P,0,0,32,48,'#0f1224');for(let x=0;x<32;x+=4)PR(P,x,0,1,44,'#141830');PR(P,2,10,1,34,'#4a5070');PR(P,8,10,1,34,'#4a5070');PR(P,2,22,7,1,'#6a7090');PR(P,0,21,2,3,'#222');PR(P,9,21,2,3,'#222');PR(P,21,4,9,4,'#0a0a14');PR(P,22,5,7,2,'#ff2bd6');PR(P,24,40,6,2,'#6a7090');PR(P,23,39,2,4,'#222');PR(P,29,39,2,4,'#222');PR(P,0,44,32,4,'#1a1e34');PR(P,0,44,32,1,'#22f0ff')},
+ roof:P=>{for(let y=0;y<44;y++)PR(P,0,y,32,1,y<14?'#0a0820':y<28?'#1a0c3a':'#2c0f4a');PR(P,24,4,4,4,'#ffe14a');PR(P,25,3,2,1,'#ffe14a');[[3,3],[9,6],[16,2],[30,9],[6,12]].forEach(([x,y])=>D(P,x,y,'#fff'));
+  [[0,26,5],[5,20,4],[9,30,4],[23,22,5],[28,28,4]].forEach(([x,y,w])=>{PR(P,x,y,w,44-y,'#100828');for(let j=y+2;j<42;j+=3)for(let i=x+1;i<x+w-1;i+=2)if((i*7+j)%5<2)D(P,i,j,j%2?'#22f0ff':'#ff2bd6')});PR(P,5,19,4,1,'#ff2bd6');PR(P,23,21,5,1,'#22f0ff');PR(P,0,44,32,4,'#181030');PR(P,0,44,32,1,'#ff2bd6')},
+ stage:P=>{PR(P,0,0,32,48,'#0c0618');for(let y=0;y<44;y++){const w=Math.floor(y/3);PR(P,8-w/2,y,4+w,1,'#ff2bd61c');PR(P,22-w/2,y,4+w,1,'#22f0ff18')}PR(P,8,0,4,2,'#ff2bd6');PR(P,22,0,4,2,'#22f0ff');PR(P,0,44,32,4,'#24103a');PR(P,0,44,32,1,'#ffe14a');PR(P,2,38,3,6,'#1a1a2a');PR(P,27,38,3,6,'#1a1a2a');D(P,3,40,'#ff2bd6');D(P,28,40,'#ff2bd6')},
+ lab:P=>{PR(P,0,0,32,48,'#050f1c');for(let i=0;i<32;i+=4)PR(P,i,0,1,44,'#0b2236');for(let j=0;j<44;j+=4)PR(P,0,j,32,1,'#0b2236');PR(P,1,8,6,8,'#0a2a40');PR(P,2,9,4,1,'#22f0ff');PR(P,2,11,3,1,'#22f0ff');PR(P,2,13,4,1,'#ff2bd6');PR(P,25,6,6,10,'#0a2a40');PR(P,26,8,4,4,'#22f0ff40');D(P,27,9,'#22f0ff');PR(P,0,44,32,4,'#081a2a');PR(P,0,44,32,1,'#22f0ff');PR(P,10,44,12,1,'#bff9ff')}};
+function toSVG(P,cls){let o='';for(let y=0;y<HH;y++){let x=0;while(x<W){const c=P[y*W+x];if(!c){x++;continue}let e=x;while(e+1<W&&P[y*W+e+1]===c)e++;o+=`<rect x="${x}" y="${y}" width="${e-x+1}" height="1" fill="${c}"/>`;x=e+1}}return o}
+function charSVG(st,locked,fit,noBg){fit=fit||STAGE_FIT[st];
+ const C=PB();
+ if(fit.acc==='guitar')ACCS.guitar(C,st);
+ body(C,st);(BOTS[fit.bottom]||(()=>{}))(C);shoes(C,fit.shoes);
+ if(fit.top==='hoodie'||fit.top==='armor'){}(TOPS[fit.top]||TOPS.none)(C,st);
+ if(fit.acc&&fit.acc!=='guitar'&&ACCS[fit.acc])ACCS[fit.acc](C,st);
+ if(fit.head!=='helmet'){face(C,st);(HAIRS[fit.hair]||(()=>{}))(C);(HEADS[fit.head]||(()=>{}))(C)}else HEADS.helmet(C);
+ // outline
+ const O=PB();for(let y=0;y<HH;y++)for(let x=0;x<W;x++)if(!C[y*W+x]){const n=[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>{const X=x+dx,Y=y+dy;return X>=0&&X<W&&Y>=0&&Y<HH&&C[Y*W+X]&&!/^#.{6}[0-9a-f]{2}$/i.test(C[Y*W+X])});if(n)O[y*W+x]=OUT}
+ if(locked){for(let i=0;i<C.length;i++){if(C[i])C[i]='#1d2148';if(O[i])O[i]='#2c3270'}}
+ const up=PB(),lo=PB();for(let i=0;i<C.length;i++){const v=C[i]||O[i];if(!v)continue;(i<30*W?up:lo)[i]=v}
+ let bg='';if(!noBg&&!locked){const B=PB();(BGS[fit.bg]||BGS.bedroom)(B);bg=toSVG(B)}
+ const sh=`<rect x="10" y="44" width="12" height="1" fill="#0008"/>`;
+ let fx='';if(!locked&&st===5)fx=`<rect x="15" y="22" width="2" height="2" fill="#bff9ff"><animate attributeName="opacity" values="1;.3;1" dur="1.2s" repeatCount="indefinite"/></rect>`;
+ if(!locked&&st>=4)fx+=[[6,14],[25,18],[7,30],[26,34]].map(([x,y],i)=>`<rect x="${x}" y="${y}" width="1" height="1" fill="${st===5?'#22f0ff':'#ff2bd6'}"><animate attributeName="opacity" values="0;1;0" dur="1.6s" begin="${i*.4}s" repeatCount="indefinite"/></rect>`).join('');
+ return `<svg viewBox="0 0 32 48" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${bg}${sh}<g>${toSVG(lo)}</g><g class="bob">${toSVG(up)}${fx}</g>${locked?'<text x="16" y="28" font-size="8" text-anchor="middle" fill="#4a5296" font-family="monospace">?</text>':''}</svg>`}
 /* ---------- wardrobe ---------- */
 function coins(){let r=0;for(const k in S.days)r+=rawXP(S.days[k]);return Math.floor(r/5)-(S.spent||0)}
 function unlocked(it,T){const u=it.u;if(S.owned&&S.owned[it.id])return true;if(STAGE_FIT.slice(0,stageOf(T.lv)+1).some(f=>f[it.slot]===it.id))return true;
@@ -155,10 +200,10 @@ let wslot='top';
 function renderWard(T){if(!window.wchar)return;const st=stageOf(T.lv),f=fitNow(st);
  // persist streak unlocks
  ITEMS.forEach(it=>{if(it.u.streak&&streak()>=it.u.streak){S.owned=S.owned||{};S.owned[it.id]=1}});
- wchar.innerHTML=charSVG(st,false,f);wcoin.textContent='🪙 '+coins();
+ wchar.innerHTML=charSVG(st,false,f);wcoin.innerHTML=pi('coin','s')+' '+coins();
  wslots.innerHTML=SLOTS.map(([k,n])=>`<button class="chip ${k===wslot?'son':''}" onclick="wslot='${k}';render()">${n}</button>`).join('');
  witems.innerHTML=ITEMS.filter(i=>i.slot===wslot).map(it=>{const ok=unlocked(it,T),on=f[it.slot]===it.id;
-  return `<button class="bd ${on?'on':''}" style="${ok?'':'opacity:.55'}" onclick="wear('${it.id}')"><div style="width:56px;height:72px;margin:auto;border-radius:10px;overflow:hidden">${charSVG(st,false,{...f,[it.slot]:it.id},it.slot!=='bg')}</div><b>${it.name}</b><small>${on?'✅ 穿戴中':ok?'点击换上':'🔒 '+lockTxt(it)}</small></button>`}).join('')}
+  return `<button class="bd ${on?'on':''}" style="${ok?'':'opacity:.55'}" onclick="wear('${it.id}')"><div style="width:64px;height:96px;margin:2px auto 4px;background:#04041a;box-shadow:0 0 0 2px #000">${charSVG(st,false,{...f,[it.slot]:it.id},it.slot!=='bg')}</div><b>${it.name}</b><small>${on?'✅ 穿戴中':ok?'点击换上':'🔒 '+lockTxt(it)}</small></button>`}).join('')}
 function wear(id){const it=ITEMS.find(i=>i.id===id),T=totals();
  if(!unlocked(it,T)){if(it.u.coin){if(coins()<it.u.coin){toast(`金币不够，还差 ${it.u.coin-coins()}`);return}
    if(!confirm(`花 ${it.u.coin} 金币买「${it.name}」？`))return;S.spent=(S.spent||0)+it.u.coin;S.owned=S.owned||{};S.owned[id]=1;toast('🛍️ 已购买 '+it.name)}
@@ -167,12 +212,12 @@ function wear(id){const it=ITEMS.find(i=>i.id===id),T=totals();
 function resetFit(){S.outfit={};save();render();toast('已恢复当前形态默认造型')}
 /* ---------- render ---------- */
 let preview=null;
-function ring(p,col){const r=15,C=2*Math.PI*r;return `<svg class="ring" viewBox="0 0 38 38"><circle cx="19" cy="19" r="${r}" stroke="#262c42" stroke-width="4" fill="none"/><circle cx="19" cy="19" r="${r}" stroke="${col}" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 19 19)"/><text x="19" y="23" font-size="10" text-anchor="middle" fill="#e9ecf5" font-weight="700">${Math.round(p*100)}</text></svg>`}
+function ring(p,col){const n=12,k=Math.round(p*n);let o='';const pos=[[1,0],[2,0],[3,0],[4,1],[4,2],[4,3],[3,4],[2,4],[1,4],[0,3],[0,2],[0,1]];pos.forEach(([x,y],i)=>o+=`<rect x="${x*8}" y="${y*8}" width="7" height="7" fill="${i<k?col:'#1c2050'}"/>`);return `<svg class="ring" viewBox="0 0 40 40" shape-rendering="crispEdges">${o}<text x="20" y="25" font-size="11" text-anchor="middle" fill="#e8ecff" font-family="FP,monospace">${Math.round(p*100)}</text></svg>`;const r=15,C=2*Math.PI*r;return `<svg class="ring" viewBox="0 0 38 38"><circle cx="19" cy="19" r="${r}" stroke="#262c42" stroke-width="4" fill="none"/><circle cx="19" cy="19" r="${r}" stroke="${col}" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 19 19)"/><text x="19" y="23" font-size="10" text-anchor="middle" fill="#e9ecf5" font-weight="700">${Math.round(p*100)}</text></svg>`}
 function render(){const T=totals(),st=stageOf(T.lv),d=day();
  document.getElementById('stage').innerHTML=charSVG(st,false,fitNow(st));
  lv.textContent='Lv.'+T.lv;stname.textContent=STAGES[st][2]+' · '+STAGES[st][1];
  xpbar.style.width=(T.cur/T.nx*100)+'%';xptx.textContent=`${T.cur} / ${T.nx} XP · 累计 ${T.lvXP}`;
- const r=rawXP(d);document.getElementById('coinc').textContent='🪙 '+coins();document.getElementById('streak').textContent='🔥 连击 '+streak()+' 天';todayxp.textContent=`⚡ 今日 ${Math.min(r,CAP)}/${CAP} XP`;
+ const r=rawXP(d);document.getElementById('coinc').innerHTML=pi('coin','s')+' '+coins();document.getElementById('streak').innerHTML=pi('fire','s')+' 连击 '+streak()+' 天';todayxp.innerHTML=`${pi('bolt','s')} 今日 ${Math.min(r,CAP)}/${CAP} XP`;
  attrs.innerHTML=DOMS.map(x=>{const v=T.dom[x.id],l=Math.floor(Math.sqrt(v/40))+1;return `<div class="attr" style="color:${x.col}">${x.ic}<b>${l}</b><span style="color:#8a93ad">${x.attr}</span></div>`}).join('');
  const w=d.water||0;wtx.textContent=w+' / 2000 ml';wbar.style.width=Math.min(100,w/20)+'%';
  let tot=0,dn=0;
@@ -203,10 +248,11 @@ function water(n){const d=day();d.water=Math.max(0,(d.water||0)+n);
  if(d.water>=2000&&d.done.water===undefined){d.done.water=hab('water').xp;toast('💧 喝满 2000ml +20 XP');celebrate()}
  else if(d.water<2000&&d.done.water!==undefined)delete d.done.water;else if(n>0)toast('💧 +250ml');save();render()}
 function celebrate(){const s=document.querySelector('#stage svg');if(s){s.classList.remove('cele');void s.offsetWidth;s.classList.add('cele')}}
-function lvUp(lv,st,evo){modalShow(`<div style="font-size:13px;color:var(--gold);letter-spacing:4px">LEVEL UP</div><div class="lv" style="font-size:44px">Lv.${lv}</div><div style="width:150px;height:200px;margin:auto">${charSVG(st)}</div>${evo?`<div class="ttl">形态进化：${STAGES[st][1]}</div><div class="mut">称号「${STAGES[st][2]}」</div>`:'<div class="mut">离下一形态更近了</div>'}<button class="btn gold" style="margin-top:14px;width:100%" onclick="modal.classList.remove('on')">继续变强</button>`);if(navigator.vibrate)navigator.vibrate([80,60,160])}
+function lvUp(lv,st,evo){modalShow(`<div style="font-size:16px;color:var(--cy);letter-spacing:4px;text-shadow:0 0 8px #22f0ff">LEVEL UP!</div><div class="lv" style="font-size:44px">Lv.${lv}</div><div class="stage" style="width:144px;height:216px;margin:10px auto">${charSVG(st,false,fitNow(st))}</div>${evo?`<div class="ttl">形态进化：${STAGES[st][1]}</div><div class="mut">称号「${STAGES[st][2]}」</div>`:'<div class="mut">离下一形态更近了</div>'}<button class="btn gold" style="margin-top:14px;width:100%" onclick="modal.classList.remove('on')">继续变强</button>`);if(navigator.vibrate)navigator.vibrate([80,60,160]);burst()}
+function burst(){const c=document.getElementById('fx'),x=c.getContext('2d');c.width=innerWidth/4|0;c.height=innerHeight/4|0;c.style.width='100%';c.style.height='100%';const cols=['#ff2bd6','#22f0ff','#ffe14a','#fff'],ps=[];for(let i=0;i<90;i++){const a=Math.random()*6.28,v=1+Math.random()*3;ps.push({x:c.width/2,y:c.height/2.6,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1.5,c:cols[i%4],l:40+Math.random()*30})}let t=0;(function f(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{if(p.l--<=0)return;p.x+=p.vx;p.y+=p.vy;p.vy+=.08;x.fillStyle=p.c;x.fillRect(p.x|0,p.y|0,2,2)});if(t++<80)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
 function modalShow(h){mbox.innerHTML=h;modal.classList.add('on')}
 document.getElementById('stage').onclick=()=>{const T=totals(),cs=stageOf(T.lv);preview=preview??cs;
- const show=i=>{preview=i;const lk=i>cs;modalShow(`<div class="ttl">${STAGES[i][1]}</div><div class="mut">Lv.${STAGES[i][0]} 解锁 · 「${STAGES[i][2]}」</div><div style="width:170px;height:230px;margin:6px auto">${charSVG(i,lk)}</div>${lk?`<div class="mut">🔒 还差 Lv.${STAGES[i][0]-T.lv} 级</div>`:''}<div class="forms" style="margin-top:10px">${STAGES.map((s,j)=>`<div class="fm ${j===i?'sel':''}" onclick="window._pv(${j})">${charSVG(j,j>cs)}<br>Lv.${s[0]}</div>`).join('')}</div>`)};
+ const show=i=>{preview=i;const lk=i>cs;modalShow(`<div class="ttl">${STAGES[i][1]}</div><div class="mut">Lv.${STAGES[i][0]} 解锁 · 「${STAGES[i][2]}」</div><div class="stage" style="width:144px;height:216px;margin:10px auto">${charSVG(i,lk)}</div>${lk?`<div class="mut">🔒 还差 Lv.${STAGES[i][0]-T.lv} 级</div>`:''}<div class="forms" style="margin-top:10px">${STAGES.map((s,j)=>`<div class="fm ${j===i?'sel':''}" onclick="window._pv(${j})">${charSVG(j,j>cs)}<br>Lv.${s[0]}</div>`).join('')}</div>`)};
  window._pv=show;show(cs)};
 
 /* ---------- raid ---------- */
@@ -245,15 +291,15 @@ function showDay(k){const d=S.days[k];if(!d){dayd.textContent=k+'：没有记录
 /* ---------- achievements ---------- */
 function everDone(id,n=1){let c=0;for(const k in S.days)if(S.days[k].done[id]!==undefined)c++;return c>=n}
 function maxDaysFor(fn){let c=0;for(const k in S.days)if(fn(S.days[k]))c++;return c}
-const BADGES=[['🍳','第一口记录','记录第一餐',()=>['breakfast','lunch','dinner'].some(x=>everDone(x))],['⚔️','初次出击','通关第一个副本',()=>(S.raids||0)>=1],
-['🪣','水桶','一天喝满 2000ml',()=>everDone('water')],['🌙','早睡者','23:00 前上床',()=>maxDaysFor(d=>d.done.bed>0)>=1],
-['🍱','三餐全勤','一天三餐都记录',()=>maxDaysFor(d=>d.done.breakfast&&d.done.lunch&&d.done.dinner)>=1],['🗓️','周满训','一周通关 A/B/C',()=>{const o={};for(const k in S.days)for(const id in S.days[k].done)if(id.startsWith('train_')){const wk=periodKeys('week',pd(k))[0];(o[wk]=o[wk]||new Set).add(id)}return Object.values(o).some(s=>s.size>=3)}],
-['🔥','七日连击','连续打卡 7 天',()=>streak()>=7],['🧬','薄肌学徒','达到 Lv5',T=>T.lv>=5],
-['📖','书虫','主线阅读累计 7 天',()=>everDone('read',7)],['🎸','乐手上路','音乐练习累计 10 次',()=>maxDaysFor(d=>['sing','guitar','drum','theory','song'].some(x=>d.done[x]))>=10],
-['🛡️','纪律守卫','守纪律累计 14 天',()=>everDone('disc',14)],['🚀','造物者','产品推进累计 10 天',()=>everDone('mvp',10)],
-['🌈','全能日','一天内五大领域都有打卡',()=>maxDaysFor(d=>DOMS.every(x=>Object.keys(d.done).some(id=>{const h=hab(id.replace(/^train_.*/,'train'));return h&&h.dom===x.id})))>=1],
-['💯','百炼','通关 10 次副本',()=>(S.raids||0)>=10],['🦾','银红战甲','达到 Lv16',T=>T.lv>=16]];
-function renderAch(T){let n=0;badges.innerHTML=BADGES.map(([ic,nm,ds,fn],i)=>{const on=fn(T);if(on){n++;if(!S.badges[i]){S.badges[i]=today();save();setTimeout(()=>toast('🏆 解锁成就：'+nm),700)}}return `<div class="bd ${on?'on':''}"><div class="ic">${ic}</div><b>${nm}</b><small>${ds}</small></div>`}).join('');achc.textContent=n+'/'+BADGES.length}
+const BADGES=[['egg','第一口记录','记录第一餐',()=>['breakfast','lunch','dinner'].some(x=>everDone(x))],['sword','初次出击','通关第一个副本',()=>(S.raids||0)>=1],
+['bucket','水桶','一天喝满 2000ml',()=>everDone('water')],['moon','早睡者','23:00 前上床',()=>maxDaysFor(d=>d.done.bed>0)>=1],
+['bento','三餐全勤','一天三餐都记录',()=>maxDaysFor(d=>d.done.breakfast&&d.done.lunch&&d.done.dinner)>=1],['cal','周满训','一周通关 A/B/C',()=>{const o={};for(const k in S.days)for(const id in S.days[k].done)if(id.startsWith('train_')){const wk=periodKeys('week',pd(k))[0];(o[wk]=o[wk]||new Set).add(id)}return Object.values(o).some(s=>s.size>=3)}],
+['fire','七日连击','连续打卡 7 天',()=>streak()>=7],['dna','薄肌学徒','达到 Lv5',T=>T.lv>=5],
+['book','书虫','主线阅读累计 7 天',()=>everDone('read',7)],['guitar','乐手上路','音乐练习累计 10 次',()=>maxDaysFor(d=>['sing','guitar','drum','theory','song'].some(x=>d.done[x]))>=10],
+['shield','纪律守卫','守纪律累计 14 天',()=>everDone('disc',14)],['side','造物者','产品推进累计 10 天',()=>everDone('mvp',10)],
+['star','全能日','一天内五大领域都有打卡',()=>maxDaysFor(d=>DOMS.every(x=>Object.keys(d.done).some(id=>{const h=hab(id.replace(/^train_.*/,'train'));return h&&h.dom===x.id})))>=1],
+['hundred','百炼','通关 10 次副本',()=>(S.raids||0)>=10],['armor','银红战甲','达到 Lv16',T=>T.lv>=16]];
+function renderAch(T){let n=0;badges.innerHTML=BADGES.map(([ic,nm,ds,fn],i)=>{const on=fn(T);if(on){n++;if(!S.badges[i]){S.badges[i]=today();save();setTimeout(()=>toast('🏆 解锁成就：'+nm),700)}}return `<div class="bd ${on?'on':''}"><div class="ic">${pi(ic)}</div><b>${nm}</b><small>${ds}</small></div>`}).join('');achc.textContent=n+'/'+BADGES.length}
 
 /* ---------- settings ---------- */
 function renderSet(){habset.innerHTML=DOMS.map(x=>`<div style="margin:10px 0 4px;display:flex;align-items:center"><b>${x.ic} ${x.name}</b><label class="mut" style="margin-left:auto"><input type="checkbox" class="sw" ${S.hidden[x.id]?'':'checked'} onchange="S.hidden['${x.id}']=!this.checked;save();render()"> 显示</label></div>`+
@@ -269,7 +315,8 @@ function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.toggle(
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));
 // dev hook for previews: ?lv=N
 const q=new URLSearchParams(location.search);if(q.get('stage')){window._forceStage=+q.get('stage')}
+document.querySelectorAll('[data-ic]').forEach(e=>e.outerHTML=pi(e.dataset.ic,e.className.replace('pi','')));
 save();render();
 if(window._forceStage!==undefined){document.getElementById('stage').innerHTML=charSVG(window._forceStage);lv.textContent='Lv.'+STAGES[window._forceStage][0];stname.textContent=STAGES[window._forceStage][2]+' · '+STAGES[window._forceStage][1]}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-if(q.get('raid')){go('raid');startRaid(q.get('raid'))}if(q.get('page'))go(q.get('page'));if(q.get('slot')){wslot=q.get('slot');render()}if(q.get('fit')){S.outfit=JSON.parse(q.get('fit'));render()}if(q.get('coins')){S.spent=-(+q.get('coins'));render()}if(q.get('pv'))document.getElementById('stage').click();
+if(q.get('raid')){go('raid');startRaid(q.get('raid'))}if(q.get('page'))go(q.get('page'));if(q.get('slot')){wslot=q.get('slot');render()}if(q.get('fit')){S.outfit=JSON.parse(q.get('fit'));render()}if(q.get('coins')){S.spent=-(+q.get('coins'));render()}if(q.get('pv'))document.getElementById('stage').click();if(q.get('lvup'))lvUp(5,2,true);if(q.get('icon')){document.body.innerHTML='<div id=ic style="width:100vw;height:100vh;background:#07071a"></div>';ic.innerHTML=charSVG(5,false,{...STAGE_FIT[5]}).replace('viewBox="0 0 32 48"','viewBox="7 1.5 18 18" preserveAspectRatio="xMidYMid slice" width="100%" height="100%"')}
